@@ -20,11 +20,12 @@ export default class Entity2 {
         return this;
     }
 
-    update() {
+    update(maxX, maxY) {
 
         this.centerPoint.moveMeX();
         this.centerPoint.moveMeY();
 
+        this.centerPoint.handleOutOfBorder(max, maxY);
 
         return this;
     }

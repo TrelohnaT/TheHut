@@ -2,10 +2,11 @@ import Calculations from "./common/Calculations.js";
 import KeyHandler from "./util/KeyHandler.js";
 import Entity from "./entities/Entity.js";
 import MouseHandler from "./util/MouseHnadler.js";
-import QuadTree from "./util/QuadTree.js";
+import QuadTreeFromCenter from "./util/QuadTreeFromCenter.js";
 import Point from "./geometry/Point.js";
 import Entity2 from "./entities/Entity2.js";
 import Point2 from "./geometry/Point2.js";
+import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
 
 
 
@@ -13,10 +14,11 @@ export default class Engine {
 
     constructor(id) {
         this.id = id;
-        /**@type {Array<Entity2>} */
-        this.enityList = new Array();
 
-        /**@type {QuadTree} */
+        /**@type {Map<String, Entity2>} */
+        this.entityMap = new Map();
+
+        /**@type {QuadTreeFromCenter} */
         this.grid = null;
 
         this.macroPlayer = "player";
@@ -29,24 +31,24 @@ export default class Engine {
     // set up entities
     setUp(canvasWidth, canvasHeight) {
         console.log("setUp");
-        this.enityList = new Array();
+        this.entityMap.clear();
         this.grid = null;
 
-        //this.enityList.push(new Player(this.macroPlayer, canvas.width/2, canvas.height/2));
-
-        // this.enityList.push(new Entity("test", 200, 0, this.speed));
-        // this.enityList.push(new Entity("test", 200, 100, this.speed));
-        // this.enityList.push(new Entity("test", 200, 200, this.speed));
-        // this.enityList.push(new Entity("test", 200, 300, this.speed));
+        this.entityMap.set("test", new Entity2("test", new Point2("test", 40, 40)));
+        this.entityMap.set("mouse", new Entity2("mouse", new Point2("mouse", 0, 0)));
 
 
-        this.enityList.push(new Entity2("test", new Point2("test", 40, 40)));
+        this.grid = new QuadTreeFromCorner(
+            "root",
+            new Point2("root", 0, 0),
+            canvasWidth,
+            canvasWidth,
+            0,
+            document.getElementById("maxDeep").value
+        );
 
-        //this.enityList.push(new Entity2("mouse", new Point2("mouse", 0, 0, 1)));
-
-
-        this.grid = new QuadTree("a", new Point("a_c", canvasWidth / 2, canvasHeight / 2),
-            canvasWidth, canvasWidth, 0, document.getElementById("maxDeep").value);
+        //this.grid = new QuadTree("a", new Point("a_c", canvasWidth / 2, canvasHeight / 2),
+        //    canvasWidth, canvasWidth, 0, document.getElementById("maxDeep").value);
         //this.grid.setUp();
 
     }
@@ -61,9 +63,8 @@ export default class Engine {
      */
     update(ctx, keyHandler, mouseHandler, canvasWidth, canvasHeight) {
         this.logToDom();
-
-        if (this.enityList.length > 0) {
-            let mouse = this.getEntity("mouse");
+        if (this.entityMap.size > 0) {
+            let mouse = this.entityMap.get("mouse"); //this.getEntity("mouse");
             if (mouse != null) {
                 mouse.centerPoint.x = mouseHandler.x;
                 mouse.centerPoint.y = mouseHandler.y;
@@ -71,27 +72,21 @@ export default class Engine {
         }
 
         if (this.grid != null) {
-            this.grid.update(this.enityList);
+            this.grid.update(this.entityMap);
 
-            this.grid.drawMe(ctx);
-        }
-
-        for (const enity of this.enityList) {
-            enity.drawMe(ctx);
-        }
-
-    }
-
-    getEntity(id) {
-        for (const entity of this.enityList) {
-            if (id == entity.id) {
-                return entity;
+            if (document.getElementById("seeGrid").checked) {
+                this.grid.drawMe(ctx);
             }
         }
+
+        for (const [key, entity] of this.entityMap) {
+            entity.drawMe(ctx);
+        }
+
     }
 
     logToDom() {
-        document.getElementById("entityCount").innerHTML = this.enityList.length;
+        document.getElementById("entityCount").innerHTML = this.entityMap.size;
 
 
     }

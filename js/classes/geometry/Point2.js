@@ -61,7 +61,22 @@ export default class Point2 {
         this.y = this.futureY;
     }
 
-    
+    handleOutOfBorder(maxX, maxY) {
+        
+        if(this.x < 0) {
+            this.x = maxX;
+        } else if(maxX < this.x) {
+            this.x = 0;
+        }
+
+        if(this.y < 0) {
+            this.y = maxY;
+        } else if(maxY < this.y) {
+            this.y = 0;
+        }
+
+    }
+
     drawMe(ctx, fillIn = false) {
         //this.vector.drawMe(ctx);
         ctx.beginPath();
