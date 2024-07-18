@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>title</title>
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+
+<body onload="starter()">  
+<!-- onkeydown="keyEvent(event, 'down')" onkeyup="keyEvent(event, 'up')">  -->
+
+    <div id="fps_counter"></div> 
+    <span>0</span>
+    <input type="range" id="maxDeep" name="maxDeep" min="1" max="10" value="5">
+    <span>10</span>
+
+    <div>
+        <span>Actual Max Deep: </span>
+        <span id="showMaxDeep">5</span>
+    </div>
+
+    <div>
+        <h2>NOTE!</h2>
+        <p>If you will check code, you will see a bit of mess.
+            This is a prototype of QuadTree which I want to use in my next game.
+        </p>
+    </div>
+
+<!-- 
+    <button onclick="startEngine()">start</button>
+    <button onclick="stopEngine()">stop</button> -->
+    
+    <div>
+        <label for="playerPosition">Player position </label>
+        <div id="playerPosition">
+            <label for="playerPositionX">X</label>
+        <span id="playerPositionX"></span>
+            <label for="playerPositionY">Y</label>
+        <span id="playerPositionY"></span>
+        </div>
+        <label for="playerVelocity">Player velocity</label>
+        <div id="playerVelocity">
+            <label for="playerVelocityX">X</label>
+            <span id="playerVelocityX"></span>
+            <label for="playerVelocityY">Y</label>
+            <span id="playerVelocityY"></span>
+        </div>
+    </div>
+    <div>
+        <label for="entityCount">entityCount: </label>
+        <span id="entityCount"></span>
+    </div>
+
+
+
+
+    <canvas id="canvas"></canvas>
+
+
+</body>
+
+
+
+
+
+
+<script type="module">
+    import { starter, keyEvent } from "./js/start_point.js";
+    window.starter = starter;
+    window.keyEvent = keyEvent;
+
+</script>
+
+
+</html>
