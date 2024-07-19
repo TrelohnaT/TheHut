@@ -79,15 +79,15 @@ export default class QuadTreeFromCorner {
      * @param {Map<String, Entity>} entityMap 
      */
     update(entityMap) {
-        if (this.isSomethingIn(entityMap)) {
+        if (this.isSomethingIn(entityMap, false)) {
             // this is not last layer
             if (this.deep < this.maxDeep) {
                 this.setUp();
                 for (const [key, child] of this.childs) {
                     child.update(entityMap);
                 }
-            } else if(this.deep == this.maxDeep) {
-                if(this.entitySet.size > 1) {
+            } else if (this.deep == this.maxDeep) {
+                if (this.entitySet.size > 1) {
                     console.log("posible colision");
                 }
 
@@ -102,12 +102,25 @@ export default class QuadTreeFromCorner {
      * @param {Map<String, Entity2>} entityMap
      * @returns {boolean} 
      */
-    isSomethingIn(entityMap) {
+    isSomethingIn(entityMap, checkOnlyCenterPoint = true) {
         let isIn = false;
         for (const [key, entity] of entityMap) {
-            if (Calculations.isPointBetweenThosePoints(entity.centerPoint, this.leftTopPoint, this.rightBottomPoint)) {
-                isIn = true;
-                this.entitySet.add(entity.id);
+            if (checkOnlyCenterPoint) {
+                if (Calculations.isPointBetweenThosePoints(entity.centerPoint, this.leftTopPoint, this.rightBottomPoint)) {
+                    isIn = true;
+                    this.entitySet.add(entity.id);
+                }
+            } else {
+
+                for (const [key, value] of entity.bodyPointMap) {
+
+                    if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
+                        isIn = true;
+                        this.entitySet.add(entity.id);
+                    }
+
+                }
+
             }
         }
         return isIn;

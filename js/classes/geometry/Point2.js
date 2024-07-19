@@ -11,8 +11,8 @@ export default class Point2 {
         this.color = color;
 
         // Vector part
-        this.futureX = 0;
-        this.futureY = 0;
+        this.futureX = x;
+        this.futureY = y;
         this.length = 0;
         this.lengthX = 0;
         this.lengthY = 0;

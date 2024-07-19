@@ -1,4 +1,5 @@
 import Point from "../geometry/Point.js";
+import Point2 from "../geometry/Point2.js";
 
 export default class Calculations
 {
@@ -92,6 +93,29 @@ export default class Calculations
         let lengthB = length_c * Math.sin(angle_B * (Math.PI / 180));
 
         return new Point(pointAId, point_B.x + lengthA, point_B.y + lengthB)
+
+    }
+
+    /**
+     *   A
+     *   |\
+     *   | \ 
+     * b |  \ c
+     *   |___\
+     *  C  a  B
+     * 
+     * @param {Point2} point_B 
+     * @param {Number} angle_B 
+     * @param {Number} length_c 
+     */
+    static point_B_angle_B_length_c_get_point2_A(point_B, angle_B, length_c, pointAId) {
+
+        // vypocitani delky usecky a
+        let lengthA = length_c * Math.cos(angle_B * (Math.PI / 180));
+        
+        let lengthB = length_c * Math.sin(angle_B * (Math.PI / 180));
+
+        return new Point2(pointAId, point_B.x + lengthA, point_B.y + lengthB)
 
     }
 

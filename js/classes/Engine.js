@@ -35,7 +35,7 @@ export default class Engine {
         this.grid = null;
 
         this.entityMap.set("test", new Entity2("test", new Point2("test", 40, 40)));
-        this.entityMap.set("mouse", new Entity2("mouse", new Point2("mouse", 0, 0)));
+        this.entityMap.set("mouse", new Entity2("mouse", new Point2("mouse", 0, 0), [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]).setMoveAble(false));
 
 
         this.grid = new QuadTreeFromCorner(
@@ -69,6 +69,10 @@ export default class Engine {
                 mouse.centerPoint.x = mouseHandler.x;
                 mouse.centerPoint.y = mouseHandler.y;
             }
+        }
+
+        for(const [key, value] of this.entityMap) {
+            value.update(canvasWidth, canvasHeight);
         }
 
         if (this.grid != null) {
