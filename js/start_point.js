@@ -29,19 +29,20 @@ export function keyEvent(event, type) {
     keyHandler.handleEvent(event.key, type);
 }
 
+
 mainLoop();
 /**
  * Hlavni smycka ktera se bude opakovat do konce casu, nebo do znovunacteni
  */
 function mainLoop() {
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    engine.update(ctx, keyHandler, mouseHandler, canvas.width, canvas.height);
-
+    if (frames % 1 == 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        engine.update(ctx, keyHandler, mouseHandler, canvas.width, canvas.height);
+    }
     requestAnimationFrame(mainLoop);
     frames++;
-    
+
 }
 
 setInterval(() => {
@@ -53,22 +54,22 @@ setInterval(() => {
 
 
 // mouse event listeners
-document.getElementById("canvas").onmousemove = function(evt) {
+document.getElementById("canvas").onmousemove = function (evt) {
     let rect = canvas.getBoundingClientRect();
-    let scaleX = canvas.width / rect.width;    
-    let scaleY = canvas.height / rect.height;  
+    let scaleX = canvas.width / rect.width;
+    let scaleY = canvas.height / rect.height;
     mouseHandler.x = (evt.clientX - rect.left) * scaleX;
-    mouseHandler.y = (evt.clientY - rect.top) * scaleY; 
-    
+    mouseHandler.y = (evt.clientY - rect.top) * scaleY;
+
 }
-document.getElementById("canvas").onmousedown = function(evt) {
+document.getElementById("canvas").onmousedown = function (evt) {
     mouseHandler.handleEvent(evt.button);
 }
-document.getElementById("canvas").onmouseup = function(evt) {
+document.getElementById("canvas").onmouseup = function (evt) {
     mouseHandler.handleEvent(evt.button);
 }
 
-document.getElementById("maxDeep").onchange = function(evt) {
+document.getElementById("maxDeep").onchange = function (evt) {
     document.getElementById("showMaxDeep").innerHTML = document.getElementById("maxDeep").value;
     starter();
 }

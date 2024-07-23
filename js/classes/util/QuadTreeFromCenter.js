@@ -82,20 +82,6 @@ export default class QuadTreeFromCenter {
             this.childs = new Array();
         }
 
-
-        // for (const entity of entityMap) {
-        //     if (this.isEntityIn(entity)) {
-        //         if (this.deep < this.maxDeep) {
-        //             this.setUp();
-        //             for (const child of this.childs) {
-        //                 child.update(entityMap);
-
-        //             }
-        //         }
-        //     } else {
-        //         this.childs = new Array();
-        //     }
-        // }
     }
 
     /**

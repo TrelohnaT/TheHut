@@ -1,4 +1,5 @@
 import Calculations from "../common/Calculations.js";
+import Entity2 from "../entities/Entity2.js";
 import Point2 from "../geometry/Point2.js";
 
 
@@ -28,10 +29,13 @@ export default class QuadTreeFromCorner {
         /**@type {Set<String>} */
         this.entitySet = new Set();
 
+        this.shouldSetUp = true;;
+
 
     }
 
     setUp() {
+        //console.log("setting up: " + this.id);
         if (this.childs.length > 0 || this.deep == this.maxDeep) {
             return;
         }
@@ -76,54 +80,106 @@ export default class QuadTreeFromCorner {
 
     /**
      * 
-     * @param {Map<String, Entity>} entityMap 
+     * @param {Map<String, Entity2>} entityMap 
+     * @param {Set<String>} parentEntitySet 
      */
-    update(entityMap) {
-        if (this.isSomethingIn(entityMap, false)) {
-            // this is not last layer
-            if (this.deep < this.maxDeep) {
+    update(entityMap, parentEntitySet, colisionSet) {
+        //console.log(parentEntitySet);
+        // each squere can sam only entites from parent in them 
+        let entitySet = new Set();
+        for (const parentChildId of parentEntitySet) {
+            let entity = entityMap.get(parentChildId);
+            if (entity != null) {
+                for (const [key, value] of entity.bodyPointMap) {
+                    if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
+                        entitySet.add(entity.id);
+                    }
+                }
+            }
+        }
+
+        // some enties are in here
+        if (entitySet.size > 0 || entitySet.size != this.entitySet.size) {
+            if (this.shouldSetUp) {
                 this.setUp();
+                this.shouldSetUp = false;
+            }
+            this.entitySet = entitySet;
+            if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
-                    child.update(entityMap);
+                    colisionSet = new Set([...colisionSet, ...child.update(entityMap, this.entitySet, colisionSet)]);
                 }
             } else if (this.deep == this.maxDeep) {
-                if (this.entitySet.size > 1) {
+                if (entitySet.size > 1) {
                     console.log("posible colision");
+                    colisionSet = this.entitySet;
+                }
+
+            }
+        } else if (entitySet.size == 0) {
+            if (!this.shouldSetUp) {
+                //console.log("clearing");
+                this.entitySet.clear();
+                this.childs.clear();
+                this.shouldSetUp = true;
+            }
+        }
+
+        return colisionSet;
+    }
+
+    destroy() {
+
+
+
+    }
+
+    /**
+     * 
+     * @param {Map<String, Entity2>} entityMap 
+     */
+    updateOld(entityMap, colisionSet) {
+        let tmpSet = this.isSomethingIn(entityMap);
+        if (tmpSet.size != 0) {
+            this.setUp();
+            // this is not last layer
+            if (this.deep < this.maxDeep) {
+                for (const [key, child] of this.childs) {
+                    colisionSet = new Set([...colisionSet, ...child.update(entityMap, colisionSet)]);
+                }
+            } else if (this.deep == this.maxDeep) {
+                if (tmpSet.size > 1) {
+                    console.log("posible colision");
+                    colisionSet = tmpSet;
                 }
 
             }
         } else {
             this.childs.clear();
         }
+
+        return colisionSet;
     }
 
     /**
      * Returns true if atleast one entity is in
      * @param {Map<String, Entity2>} entityMap
-     * @returns {boolean} 
+     * @returns {Set<String>} 
      */
-    isSomethingIn(entityMap, checkOnlyCenterPoint = true) {
-        let isIn = false;
+    isSomethingIn(entityMap) {
+        let set = new Set();
         for (const [key, entity] of entityMap) {
-            if (checkOnlyCenterPoint) {
-                if (Calculations.isPointBetweenThosePoints(entity.centerPoint, this.leftTopPoint, this.rightBottomPoint)) {
-                    isIn = true;
-                    this.entitySet.add(entity.id);
-                }
-            } else {
+            for (const [key, value] of entity.bodyPointMap) {
+                if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
 
-                for (const [key, value] of entity.bodyPointMap) {
-
-                    if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
-                        isIn = true;
-                        this.entitySet.add(entity.id);
-                    }
-
+                    set.add(entity.id);
                 }
 
             }
+
+
         }
-        return isIn;
+        return set;
     }
 
     /**
@@ -134,12 +190,12 @@ export default class QuadTreeFromCorner {
         this.leftTopPoint.drawMe(ctx);
         this.rightBottomPoint.drawMe(ctx);
 
-        this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-            this.leftTopPoint.x, this.rightBottomPoint.y
-        );
-        this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-            this.rightBottomPoint.x, this.leftTopPoint.y
-        );
+        // this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+        //     this.leftTopPoint.x, this.rightBottomPoint.y
+        // );
+        // this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+        //     this.rightBottomPoint.x, this.leftTopPoint.y
+        // );
 
 
         if (this.deep == this.maxDeep) {

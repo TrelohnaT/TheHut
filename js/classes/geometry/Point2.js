@@ -18,6 +18,8 @@ export default class Point2 {
         this.lengthY = 0;
         this.angle = 0;
 
+        this.changed = true;
+
     }
 
     /**
@@ -54,27 +56,40 @@ export default class Point2 {
 
     moveMeX() {
         this.x = this.futureX;
-
+        if (this.x != this.futureX) {
+            this.changed = true;
+        }
     }
 
     moveMeY() {
         this.y = this.futureY;
+        if (this.y != this.futureY) {
+            this.changed = true;
+        }
     }
 
     handleOutOfBorder(maxX, maxY) {
-        
-        if(this.x < 0) {
+
+        if (this.x < 0) {
             this.x = maxX;
-        } else if(maxX < this.x) {
+            this.changed = true;
+        } else if (maxX < this.x) {
             this.x = 0;
+            this.changed = true;
         }
 
-        if(this.y < 0) {
+        if (this.y < 0) {
             this.y = maxY;
-        } else if(maxY < this.y) {
+            this.changed = true;
+        } else if (maxY < this.y) {
             this.y = 0;
+            this.changed = true;
         }
 
+    }
+
+    resetChangedFlag() {
+        this.changed = false;
     }
 
     drawMe(ctx, fillIn = false) {

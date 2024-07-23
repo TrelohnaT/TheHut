@@ -10,11 +10,12 @@ export default class Entity2 {
      * @param {String} id 
      * @param {Point2} centerPoint 
      */
-    constructor(id, centerPoint, distanceFromCenter = [10, 10, 10, 10]) {
+    constructor(id, centerPoint, distanceFromCenter = [10, 10, 10, 10], offsetAngle = 0) {
         this.id = id;
+        this.kind = "Entity2";
         this.centerPoint = centerPoint;
 
-        this.offsetAngle = 0;
+        this.offsetAngle = offsetAngle;
         this.baseRotation = 0;
         this.sizeScale = 1;
         this.distanceFromCenter = distanceFromCenter;
@@ -24,11 +25,9 @@ export default class Entity2 {
 
         this.moveAble = true;
 
-
     }
 
     setUp() {
-
 
 
 
@@ -42,12 +41,18 @@ export default class Entity2 {
             this.centerPoint.moveMeY();
         }
 
-        this.bodyPointMap = this.generatePoints();
 
-        this.centerPoint.handleOutOfBorder(maxX, maxY);
+        if (this.centerPoint.changed) {
+            //console.log(this.centerPoint.id + " changed");
+            this.bodyPointMap = this.generatePoints();
 
+            this.centerPoint.handleOutOfBorder(maxX, maxY);
+
+            this.centerPoint.resetChangedFlag();
+        }
         return this;
     }
+
 
     /**
      * 
