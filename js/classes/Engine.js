@@ -1,16 +1,9 @@
-import Calculations from "./common/Calculations.js";
 import KeyHandler from "./util/KeyHandler.js";
-import Entity from "./entities/Entity.js";
 import MouseHandler from "./util/MouseHnadler.js";
-import QuadTreeFromCenter from "./util/QuadTreeFromCenter.js";
-import Point from "./geometry/Point.js";
 import Entity2 from "./entities/Entity2.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
-import Terrain from "./entities/Terrain.js";
-import TerrainStrip from "./entities/TerrainStrip.js";
-
-
+import EntityBuilder from "./entities/EntityBuilder.js";
 
 export default class Engine {
 
@@ -22,7 +15,6 @@ export default class Engine {
 
         /**@type {QuadTreeFromCorner} */
         this.grid = null;
-
 
         this.macroPlayer = "player";
 
@@ -38,13 +30,11 @@ export default class Engine {
     setUp(canvasWidth, canvasHeight) {
         console.log("setUp");
         this.entityMap.clear();
-        this.grid = null;//new Terrain("terrain", 20).setUp([30, 40], 20);
+        this.grid = null;
 
-        let distance = 10;
-        //let terrainPointsX = 5;
-        //let terrainPointsY = [10, 15, 15, 10, 10];
+        let distance = 15;
 
-        let terrainPoints = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+        let terrainPoints = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
 
         let startTerrainX = 30;
         let startTerrainY = canvasHeight - 50;
@@ -53,21 +43,27 @@ export default class Engine {
         for (let i = 0; i < terrainPoints.length; i++) {
             // y axis
             for (let j = 0; j < terrainPoints[i]; j++) {
-
                 this.entityMap.set("terrain_entity_" + i + "_" + j,
-                    new Entity2("terrain_entity_" + i + "_" + j,
+                    new EntityBuilder(
+                        "terrain_entity_" + i + "_" + j,
                         new Point2("terrain_centerpoint_" + i + "_" + j,
                             startTerrainX + (i * distance),
                             startTerrainY - (j * distance)
-                        ), [distance/2, distance/2, distance/2, distance/2], 45
-                    )
+                        ),
+                        [distance / 2, distance / 2, distance / 2, distance / 2]
+                    ).setBaseRotation(45)
+                        .build()
                 );
             }
         }
 
-
-        //this.entityMap.set("test", new Entity2("test",  new Point2("test", 40, 40)));
-        this.entityMap.set("mouse", new Entity2("mouse", new Point2("mouse", 0, 0), [30,30,30,30,30,30,30,30,30,30]));
+        this.entityMap.set("mouse",
+            new EntityBuilder(
+                "mouse",
+                new Point2("mouse_point", 0, 0),
+                [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+            ).build()
+        );
 
         this.grid = new QuadTreeFromCorner(
             "root",
@@ -75,10 +71,8 @@ export default class Engine {
             canvasWidth,
             canvasWidth,
             0,
-            //2
-            9
+            8
         );
-
     }
 
     /**
@@ -93,7 +87,7 @@ export default class Engine {
 
         this.logToDom();
         if (this.entityMap.size > 0) {
-            let mouse = this.entityMap.get("mouse"); //this.getEntity("mouse");
+            let mouse = this.entityMap.get("mouse");
             if (mouse != null) {
                 mouse.centerPoint.futureX = mouseHandler.x;
                 mouse.centerPoint.futureY = mouseHandler.y;
@@ -106,12 +100,20 @@ export default class Engine {
         }
 
         if (this.grid != null) {
-            //console.log(this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set()));
-            //console.log(Array.from(this.entityMap.keys()));
-            let tmp = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
+            // return set of collisions
+            let collisionSet = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
 
-            if(tmp.size != 0) {
-                console.log(tmp);
+            if (collisionSet.size != 0) {
+                console.log(collisionSet);
+
+                for (const collision of collisionSet) {
+
+                    for (const entityId of collision.entitiesId) {
+                        if (entityId.includes("terrain")) {
+                            this.entityMap.delete(entityId);
+                        }
+                    }
+                }
             }
 
             if (document.getElementById("seeGrid").checked) {
@@ -127,8 +129,6 @@ export default class Engine {
 
     logToDom() {
         document.getElementById("entityCount").innerHTML = this.entityMap.size;
-
-
     }
 
 }

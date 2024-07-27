@@ -10,25 +10,31 @@ export default class Entity2 {
      * @param {String} id 
      * @param {Point2} centerPoint 
      */
-    constructor(id, centerPoint, distanceFromCenter = [10, 10, 10, 10], offsetAngle = 0) {
+    constructor(
+        id,
+        centerPoint,
+        distanceFromCenter,
+        offsetAngle,
+        baseRotation,
+        sizeScale,
+        moveAble,
+        fillInCollor
+    ) {
         this.id = id;
-        this.kind = "Entity2";
         this.centerPoint = centerPoint;
-
-        this.offsetAngle = offsetAngle;
-        this.baseRotation = 0;
-        this.sizeScale = 1;
         this.distanceFromCenter = distanceFromCenter;
+        this.offsetAngle = offsetAngle;
+        this.baseRotation = baseRotation;
+        this.sizeScale = sizeScale;
+        this.moveAble = moveAble;
+        this.fillInCollor = fillInCollor;
 
+        // generated
+        this.kind = "Entity2";
         this.bodyPointMap = new Map();
-
-        this.moveAble = true;
-
     }
 
     setUp() {
-
-
 
         return this;
     }

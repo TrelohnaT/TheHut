@@ -79,6 +79,7 @@ export default class QuadTreeFromCorner {
      * 
      * @param {Map<String, Entity2>} entityMap 
      * @param {Set<String>} parentEntitySet 
+     * @returns {Set<Collision>}
      */
     update(entityMap, parentEntitySet, colisionSet) {
         //console.log("update: " + this.id);
@@ -105,7 +106,7 @@ export default class QuadTreeFromCorner {
 
             if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
-                   colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
+                    colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
                 }
             } else if (this.deep == this.maxDeep) {
                 // this only take place in leaf child
@@ -140,12 +141,12 @@ export default class QuadTreeFromCorner {
         this.leftTopPoint.drawMe(ctx);
         this.rightBottomPoint.drawMe(ctx);
 
-        //  this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-        //      this.leftTopPoint.x, this.rightBottomPoint.y
-        //  );
-        //  this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-        //      this.rightBottomPoint.x, this.leftTopPoint.y
-        //  );
+        this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+            this.leftTopPoint.x, this.rightBottomPoint.y
+        );
+        this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+            this.rightBottomPoint.x, this.leftTopPoint.y
+        );
 
 
         if (this.deep == this.maxDeep) {
