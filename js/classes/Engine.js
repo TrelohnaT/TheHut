@@ -122,9 +122,9 @@ export default class Engine {
         if (this.grid != null) {
             //console.log(this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set()));
             //console.log(Array.from(this.entityMap.keys()));
-            this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
+            console.log(this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set()));
             if (document.getElementById("seeGrid").checked) {
-                this.grid.drawMe(ctx);
+                //this.grid.drawMe(ctx);
             }
         }
 

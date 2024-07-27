@@ -40,7 +40,6 @@ export default class QuadTreeFromCorner {
             return;
         }
 
-
         let newWidth = this.width / 2;
         let newHeight = this.height / 2;
 
@@ -85,7 +84,7 @@ export default class QuadTreeFromCorner {
      */
     update(entityMap, parentEntitySet, colisionSet) {
         //console.log(parentEntitySet);
-        // each squere can sam only entites from parent in them 
+        // each squere can have only entites from parent in them 
         let entitySet = new Set();
         for (const parentChildId of parentEntitySet) {
             let entity = entityMap.get(parentChildId);
@@ -132,54 +131,6 @@ export default class QuadTreeFromCorner {
 
 
 
-    }
-
-    /**
-     * 
-     * @param {Map<String, Entity2>} entityMap 
-     */
-    updateOld(entityMap, colisionSet) {
-        let tmpSet = this.isSomethingIn(entityMap);
-        if (tmpSet.size != 0) {
-            this.setUp();
-            // this is not last layer
-            if (this.deep < this.maxDeep) {
-                for (const [key, child] of this.childs) {
-                    colisionSet = new Set([...colisionSet, ...child.update(entityMap, colisionSet)]);
-                }
-            } else if (this.deep == this.maxDeep) {
-                if (tmpSet.size > 1) {
-                    console.log("posible colision");
-                    colisionSet = tmpSet;
-                }
-
-            }
-        } else {
-            this.childs.clear();
-        }
-
-        return colisionSet;
-    }
-
-    /**
-     * Returns true if atleast one entity is in
-     * @param {Map<String, Entity2>} entityMap
-     * @returns {Set<String>} 
-     */
-    isSomethingIn(entityMap) {
-        let set = new Set();
-        for (const [key, entity] of entityMap) {
-            for (const [key, value] of entity.bodyPointMap) {
-                if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
-
-                    set.add(entity.id);
-                }
-
-            }
-
-
-        }
-        return set;
     }
 
     /**

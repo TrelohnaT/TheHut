@@ -39,8 +39,6 @@ export default class Calculations
         var y_diff = y_a - y_b;
 
         return Math.sqrt(Math.pow(x_diff, 2) + Math.pow(y_diff, 2));
-        //return Math.floor(Math.sqrt(Math.pow(x_diff, 2) + Math.pow(y_diff, 2)));
-
     }
 
     /**
@@ -52,9 +50,6 @@ export default class Calculations
     static pythagor(num_1, num_2)
     {
         return Math.sqrt(Math.pow(num_1, 2) + Math.pow(num_2, 2));
-        //return Math.floor(Math.sqrt(Math.pow(num_1, 2) + Math.pow(num_2, 2)));
-
-
     }
 
     /**
