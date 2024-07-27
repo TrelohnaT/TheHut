@@ -20,7 +20,6 @@ export default class Entity2 {
         this.sizeScale = 1;
         this.distanceFromCenter = distanceFromCenter;
 
-
         this.bodyPointMap = new Map();
 
         this.moveAble = true;
@@ -41,7 +40,6 @@ export default class Entity2 {
             this.centerPoint.moveMeY();
         }
 
-
         if (this.centerPoint.changed) {
             //console.log(this.centerPoint.id + " changed");
             this.bodyPointMap = this.generatePoints();
@@ -52,7 +50,6 @@ export default class Entity2 {
         }
         return this;
     }
-
 
     /**
      * 

@@ -40,18 +40,17 @@ export default class Engine {
         this.entityMap.clear();
         this.grid = null;//new Terrain("terrain", 20).setUp([30, 40], 20);
 
-        let distance = 50;
+        let distance = 10;
         //let terrainPointsX = 5;
         //let terrainPointsY = [10, 15, 15, 10, 10];
 
-        let terrainPoints = [1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5];
+        let terrainPoints = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
 
         let startTerrainX = 30;
-        let startTerrainY = canvasHeight - 30;
+        let startTerrainY = canvasHeight - 50;
 
         // X axis
         for (let i = 0; i < terrainPoints.length; i++) {
-
             // y axis
             for (let j = 0; j < terrainPoints[i]; j++) {
 
@@ -63,21 +62,12 @@ export default class Engine {
                         ), [distance/2, distance/2, distance/2, distance/2], 45
                     )
                 );
-
-
             }
-
-            //this.entityMap.set("test_" + i, new TerrainStrip("stripp", distance, i, 5).setUp(canvasHeight));
-
         }
 
 
         //this.entityMap.set("test", new Entity2("test",  new Point2("test", 40, 40)));
         this.entityMap.set("mouse", new Entity2("mouse", new Point2("mouse", 0, 0), [30,30,30,30,30,30,30,30,30,30]));
-        //this.entityMap.set("terrain", new Terrain("terrain",  20).generateTerrain(canvasWidth, canvasHeight - 400, 400, 5));
-
-
-
 
         this.grid = new QuadTreeFromCorner(
             "root",
@@ -88,10 +78,6 @@ export default class Engine {
             //2
             9
         );
-
-        //this.grid = new QuadTree("a", new Point("a_c", canvasWidth / 2, canvasHeight / 2),
-        //    canvasWidth, canvasWidth, 0, document.getElementById("maxDeep").value);
-        //this.grid.setUp();
 
     }
 
@@ -122,9 +108,14 @@ export default class Engine {
         if (this.grid != null) {
             //console.log(this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set()));
             //console.log(Array.from(this.entityMap.keys()));
-            console.log(this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set()));
+            let tmp = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
+
+            if(tmp.size != 0) {
+                console.log(tmp);
+            }
+
             if (document.getElementById("seeGrid").checked) {
-                //this.grid.drawMe(ctx);
+                this.grid.drawMe(ctx);
             }
         }
 

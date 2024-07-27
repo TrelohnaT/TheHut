@@ -114,6 +114,20 @@ export default class Calculations
 
     }
 
+    /**
+     * 
+     * @param {Set<*>} target 
+     * @param {Set<*>} toAdd 
+     * @returns {Set<*>}
+     */
+    static addSetToSet(target, toAdd) {
+        for(const tmp of toAdd) {
+            target.add(tmp);
+        }
+        return target;
+    }
+
+
 }
 
 

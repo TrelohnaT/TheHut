@@ -1,6 +1,7 @@
 import Calculations from "../common/Calculations.js";
 import Entity2 from "../entities/Entity2.js";
 import Point2 from "../geometry/Point2.js";
+import Collision from "./Collision.js";
 
 
 export default class QuadTreeFromCorner {
@@ -26,9 +27,6 @@ export default class QuadTreeFromCorner {
         /**@type {Map<String, QuadTreeFromCorner>} */
         this.childs = new Map();
 
-        /**@type {Set<String>} */
-        this.entitySet = new Set();
-
         this.shouldSetUp = true;;
 
 
@@ -43,33 +41,33 @@ export default class QuadTreeFromCorner {
         let newWidth = this.width / 2;
         let newHeight = this.height / 2;
 
-        this.childs.set("left_top", new QuadTreeFromCorner(
-            "left_top",
-            new Point2("left_top_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y),
+        this.childs.set(this.id + "_left_top", new QuadTreeFromCorner(
+            this.id + "_left_top",
+            new Point2(this.id + "_left_top_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y),
             newWidth,
             newHeight,
             this.deep + 1,
             this.maxDeep
         ));
-        this.childs.set("right_top", new QuadTreeFromCorner(
-            "right_top",
-            new Point2("right_top_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y),
+        this.childs.set(this.id + "_right_top", new QuadTreeFromCorner(
+            this.id + "_right_top",
+            new Point2(this.id + "_right_top_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y),
             newWidth,
             newHeight,
             this.deep + 1,
             this.maxDeep
         ));
-        this.childs.set("left_bottom", new QuadTreeFromCorner(
-            "left_bottom",
-            new Point2("left_bottom_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y + newHeight),
+        this.childs.set(this.id + "_left_bottom", new QuadTreeFromCorner(
+            this.id + "_left_bottom",
+            new Point2(this.id + "_left_bottom_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y + newHeight),
             newWidth,
             newHeight,
             this.deep + 1,
             this.maxDeep
         ));
-        this.childs.set("right_bottom", new QuadTreeFromCorner(
-            "right_bottom",
-            new Point2("right_bottom_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y + newHeight),
+        this.childs.set(this.id + "_right_bottom", new QuadTreeFromCorner(
+            this.id + "_right_bottom",
+            new Point2(this.id + "_right_bottom_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y + newHeight),
             newWidth,
             newHeight,
             this.deep + 1,
@@ -83,7 +81,7 @@ export default class QuadTreeFromCorner {
      * @param {Set<String>} parentEntitySet 
      */
     update(entityMap, parentEntitySet, colisionSet) {
-        //console.log(parentEntitySet);
+        //console.log("update: " + this.id);
         // each squere can have only entites from parent in them 
         let entitySet = new Set();
         for (const parentChildId of parentEntitySet) {
@@ -91,6 +89,7 @@ export default class QuadTreeFromCorner {
             if (entity != null) {
                 for (const [key, value] of entity.bodyPointMap) {
                     if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
+                        // set of entites in this square
                         entitySet.add(entity.id);
                     }
                 }
@@ -98,27 +97,27 @@ export default class QuadTreeFromCorner {
         }
 
         // some enties are in here
-        if (entitySet.size > 0 || entitySet.size != this.entitySet.size) {
+        if (entitySet.size > 0) {
             if (this.shouldSetUp) {
                 this.setUp();
                 this.shouldSetUp = false;
             }
-            this.entitySet = entitySet;
+
             if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
-                    colisionSet = new Set([...colisionSet, ...child.update(entityMap, this.entitySet, colisionSet)]);
+                   colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
                 }
             } else if (this.deep == this.maxDeep) {
+                // this only take place in leaf child
                 if (entitySet.size > 1) {
-                    console.log("posible colision");
-                    colisionSet = this.entitySet;
+                    console.log("colision");
+                    colisionSet.add(new Collision("", this.id, entitySet));
                 }
 
             }
         } else if (entitySet.size == 0) {
             if (!this.shouldSetUp) {
                 //console.log("clearing");
-                this.entitySet.clear();
                 this.childs.clear();
                 this.shouldSetUp = true;
             }
@@ -141,12 +140,12 @@ export default class QuadTreeFromCorner {
         this.leftTopPoint.drawMe(ctx);
         this.rightBottomPoint.drawMe(ctx);
 
-        // this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-        //     this.leftTopPoint.x, this.rightBottomPoint.y
-        // );
-        // this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
-        //     this.rightBottomPoint.x, this.leftTopPoint.y
-        // );
+        //  this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+        //      this.leftTopPoint.x, this.rightBottomPoint.y
+        //  );
+        //  this.drawLine(ctx, this.leftTopPoint.x, this.leftTopPoint.y,
+        //      this.rightBottomPoint.x, this.leftTopPoint.y
+        //  );
 
 
         if (this.deep == this.maxDeep) {
