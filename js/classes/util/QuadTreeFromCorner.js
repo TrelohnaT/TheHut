@@ -27,14 +27,18 @@ export default class QuadTreeFromCorner {
         /**@type {Map<String, QuadTreeFromCorner>} */
         this.childs = new Map();
 
-        this.shouldSetUp = true;;
+        this.shouldSetUp = true;
+
+        this.lowLimit = 8;
+
+        this.isLeaf = false;
 
 
     }
 
     setUp() {
         //console.log("setting up: " + this.id);
-        if (this.childs.length > 0 || this.deep == this.maxDeep) {
+        if (this.childs.length > 0 || (this.width < this.lowLimit && this.height < this.lowLimit)){ //this.deep == this.maxDeep) {
             return;
         }
 
@@ -104,11 +108,14 @@ export default class QuadTreeFromCorner {
                 this.shouldSetUp = false;
             }
 
-            if (this.deep < this.maxDeep) {
+            if(this.width >= this.lowLimit && this.height >= this.lowLimit) {
+            //if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
                     colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
                 }
-            } else if (this.deep == this.maxDeep) {
+            } else  {
+                this.isLeaf = true; 
+            //else if (this.deep == this.maxDeep) {
                 // this only take place in leaf child
                 if (entitySet.size > 1) {
                     console.log("colision");
@@ -148,13 +155,12 @@ export default class QuadTreeFromCorner {
             this.rightBottomPoint.x, this.leftTopPoint.y
         );
 
-
-        if (this.deep == this.maxDeep) {
+        if(this.isLeaf) {
+        //if (this.deep == this.maxDeep) {
             ctx.fillStyle = "red";
             ctx.fillRect(this.leftTopPoint.x, this.leftTopPoint.y, this.width, this.height);
 
         }
-
 
         for (const [key, child] of this.childs) {
             child.drawMe(ctx);
