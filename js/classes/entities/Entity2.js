@@ -1,15 +1,9 @@
 import Calculations from "../common/Calculations.js";
 import Point2 from "../geometry/Point2.js";
-
-
+import EntityStrategies from "./EntityStrategies.js";
 
 export default class Entity2 {
 
-    /**
-     * 
-     * @param {String} id 
-     * @param {Point2} centerPoint 
-     */
     constructor(
         id,
         centerPoint,
@@ -36,7 +30,6 @@ export default class Entity2 {
     }
 
     setUp() {
-
         return this;
     }
 
@@ -49,7 +42,14 @@ export default class Entity2 {
 
         if (this.centerPoint.changed) {
             //console.log(this.centerPoint.id + " changed");
-            this.bodyPointMap = this.generatePoints();
+            this.bodyPointMap = EntityStrategies.generatePointsByRotationVector(
+                this.id,
+                this.distanceFromCenter,
+                this.centerPoint,
+                this.offsetAngle,
+                this.baseRotation,
+                this.sizeScale
+            );
 
             this.centerPoint.handleOutOfBorder(maxX, maxY);
 
