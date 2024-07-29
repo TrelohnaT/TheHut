@@ -32,12 +32,12 @@ export default class Engine {
         this.entityMap.clear();
         this.grid = null;
 
-        let distance = 15;
+        let distance = 32;
 
-        let terrainPoints = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let terrainPoints = [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8];
 
-        let startTerrainX = 30;
-        let startTerrainY = canvasHeight - 50;
+        let startTerrainX = 16;
+        let startTerrainY = canvasHeight - 16;
 
         // X axis
         for (let i = 0; i < terrainPoints.length; i++) {
@@ -85,6 +85,7 @@ export default class Engine {
      */
     update(ctx, keyHandler, mouseHandler, canvasWidth, canvasHeight) {
 
+        let doomedEntites = new Set();
         this.logToDom();
         if (this.entityMap.size > 0) {
             let mouse = this.entityMap.get("mouse");
@@ -107,10 +108,9 @@ export default class Engine {
                 console.log(collisionSet);
 
                 for (const collision of collisionSet) {
-
                     for (const entityId of collision.entitiesId) {
                         if (entityId.includes("terrain")) {
-                            this.entityMap.delete(entityId);
+                            doomedEntites.add(this.entityMap.get(entityId).destroy());
                         }
                     }
                 }
@@ -121,6 +121,12 @@ export default class Engine {
             }
         }
 
+        // delete doomed entites
+        for(const doomed of doomedEntites) {
+            this.entityMap.delete(doomed);
+        }
+
+        // draw alive entities
         for (const [key, entity] of this.entityMap) {
             entity.drawMe(ctx);
         }

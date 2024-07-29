@@ -38,7 +38,7 @@ export default class QuadTreeFromCorner {
 
     setUp() {
         //console.log("setting up: " + this.id);
-        if (this.childs.length > 0 || (this.width < this.lowLimit && this.height < this.lowLimit)){ //this.deep == this.maxDeep) {
+        if (this.childs.length > 0 || (this.width < this.lowLimit && this.height < this.lowLimit)) { //this.deep == this.maxDeep) {
             return;
         }
 
@@ -108,14 +108,15 @@ export default class QuadTreeFromCorner {
                 this.shouldSetUp = false;
             }
 
-            if(this.width >= this.lowLimit && this.height >= this.lowLimit) {
-            //if (this.deep < this.maxDeep) {
+            if (this.width >= this.lowLimit || this.height >= this.lowLimit) {
+                //if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
                     colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
                 }
-            } else  {
-                this.isLeaf = true; 
-            //else if (this.deep == this.maxDeep) {
+            } else if (this.width < this.lowLimit && this.height < this.lowLimit) {
+
+                this.isLeaf = true;
+                //else if (this.deep == this.maxDeep) {
                 // this only take place in leaf child
                 if (entitySet.size > 1) {
                     console.log("colision");
@@ -128,6 +129,7 @@ export default class QuadTreeFromCorner {
                 //console.log("clearing");
                 this.childs.clear();
                 this.shouldSetUp = true;
+                this.isLeaf = false;
             }
         }
 
@@ -155,8 +157,8 @@ export default class QuadTreeFromCorner {
             this.rightBottomPoint.x, this.leftTopPoint.y
         );
 
-        if(this.isLeaf) {
-        //if (this.deep == this.maxDeep) {
+        if (this.isLeaf) {
+            //if (this.deep == this.maxDeep) {
             ctx.fillStyle = "red";
             ctx.fillRect(this.leftTopPoint.x, this.leftTopPoint.y, this.width, this.height);
 

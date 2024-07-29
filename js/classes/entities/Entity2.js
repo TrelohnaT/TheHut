@@ -32,6 +32,7 @@ export default class Entity2 {
         // generated
         this.kind = "Entity2";
         this.bodyPointMap = new Map();
+        this.isDoomed = false;
     }
 
     setUp() {
@@ -55,6 +56,11 @@ export default class Entity2 {
             this.centerPoint.resetChangedFlag();
         }
         return this;
+    }
+
+    destroy() {
+        this.isDoomed = true;
+        return this.id; 
     }
 
     /**

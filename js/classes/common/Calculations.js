@@ -1,4 +1,3 @@
-import Point from "../geometry/Point.js";
 import Point2 from "../geometry/Point2.js";
 
 export default class Calculations
