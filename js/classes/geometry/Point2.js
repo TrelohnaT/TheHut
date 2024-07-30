@@ -23,6 +23,15 @@ export default class Point2 {
     }
 
     /**
+     * Set vector by increments for each axis.
+     * @param {Number} stepX 
+     * @param {Number} stepY 
+     */
+    setVectorByStep(stepX, stepY) {
+        this.setVectorByPoint(this.x + stepX, this.y + stepY);
+    }
+
+    /**
      * Set Vector by point of next position.
      * @param {Number} futureX 
      * @param {Number} futureY 

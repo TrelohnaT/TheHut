@@ -1,5 +1,5 @@
 import Calculations from "../common/Calculations.js";
-import Entity2 from "../entities/Entity2.js";
+import Entity2 from "../entities/Entity.js";
 import Point2 from "../geometry/Point2.js";
 import Collision from "./Collision.js";
 

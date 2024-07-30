@@ -11,13 +11,6 @@ export default class EntityStrategies {
     constructor() {
     }
 
-    static use(strategyName) {
-        if (strategyName == EntityStrategies.strategySquare) {
-            
-        } else if(strategyName == EntityStrategies.strategyPointsByRotationVector) {
-            return EntityStrategies.gene
-        }
-    }
 
     static generatePointsByRotationVector(
         id,

@@ -1,4 +1,4 @@
-import Entity2 from "./Entity2.js";
+import Entity from "./Entity.js";
 
 
 
@@ -72,10 +72,10 @@ export default class EntityBuilder {
 
     /**
      * 
-     * @returns {Entity2}
+     * @returns {Entity}
      */
     build() {
-        return new Entity2(
+        return new Entity(
             this.id,
             this.centerPoint,
             this.distanceFromCenter,

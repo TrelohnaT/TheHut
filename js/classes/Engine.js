@@ -1,9 +1,10 @@
 import KeyHandler from "./util/KeyHandler.js";
 import MouseHandler from "./util/MouseHnadler.js";
-import Entity2 from "./entities/Entity2.js";
+import Entity2 from "./entities/Entity.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
 import EntityBuilder from "./entities/EntityBuilder.js";
+import EntityBuilder2 from "./entities/EntityBuilder2.js";
 
 export default class Engine {
 
@@ -34,7 +35,7 @@ export default class Engine {
 
         let distance = 32;
 
-        let terrainPoints = [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8];
+        let terrainPoints = [8, 8, 8];
 
         let startTerrainX = 16;
         let startTerrainY = canvasHeight - 16;
@@ -44,25 +45,32 @@ export default class Engine {
             // y axis
             for (let j = 0; j < terrainPoints[i]; j++) {
                 this.entityMap.set("terrain_entity_" + i + "_" + j,
-                    new EntityBuilder(
+                    new EntityBuilder2(
                         "terrain_entity_" + i + "_" + j,
                         new Point2("terrain_centerpoint_" + i + "_" + j,
                             startTerrainX + (i * distance),
                             startTerrainY - (j * distance)
-                        ),
-                        [distance / 2, distance / 2, distance / 2, distance / 2]
-                    ).setBaseRotation(45)
-                        .build()
+                        )
+                    ).getPointByRotatingVector(
+                        [distance / 2, distance / 2, distance / 2, distance / 2],
+                        0,
+                        45,
+                        1
+                    ).build()
                 );
             }
         }
 
         this.entityMap.set("mouse",
-            new EntityBuilder(
+            new EntityBuilder2(
                 "mouse",
-                new Point2("mouse_point", 0, 0),
-                [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
-            ).build()
+                new Point2("mouse_point", 0, 0)
+            ).getPointByRotatingVector(
+                [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+                0,
+                0,
+                1
+            ).setMoveAble(true).build()
         );
 
         this.grid = new QuadTreeFromCorner(
@@ -90,9 +98,11 @@ export default class Engine {
         if (this.entityMap.size > 0) {
             let mouse = this.entityMap.get("mouse");
             if (mouse != null) {
-                mouse.centerPoint.futureX = mouseHandler.x;
-                mouse.centerPoint.futureY = mouseHandler.y;
-                mouse.centerPoint.changed = true;
+                mouse.moveMeTo(mouseHandler.x, mouseHandler.y);
+
+                // mouse.centerPoint.futureX = mouseHandler.x;
+                // mouse.centerPoint.futureY = mouseHandler.y;
+                // mouse.centerPoint.changed = true;
             }
         }
 
@@ -122,7 +132,7 @@ export default class Engine {
         }
 
         // delete doomed entites
-        for(const doomed of doomedEntites) {
+        for (const doomed of doomedEntites) {
             this.entityMap.delete(doomed);
         }
 
