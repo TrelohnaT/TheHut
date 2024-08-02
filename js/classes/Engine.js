@@ -3,7 +3,6 @@ import MouseHandler from "./util/MouseHnadler.js";
 import Entity2 from "./entities/Entity.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
-import EntityBuilder from "./entities/EntityBuilder.js";
 import EntityBuilder2 from "./entities/EntityBuilder2.js";
 
 export default class Engine {
@@ -33,12 +32,12 @@ export default class Engine {
         this.entityMap.clear();
         this.grid = null;
 
-        let distance = 32;
+        let distance = 50;
 
         let terrainPoints = [8, 8, 8];
 
-        let startTerrainX = 16;
-        let startTerrainY = canvasHeight - 16;
+        let startTerrainX = 25;
+        let startTerrainY = canvasHeight - 25;
 
         // X axis
         for (let i = 0; i < terrainPoints.length; i++) {
@@ -51,12 +50,20 @@ export default class Engine {
                             startTerrainX + (i * distance),
                             startTerrainY - (j * distance)
                         )
-                    ).getPointByRotatingVector(
-                        [distance / 2, distance / 2, distance / 2, distance / 2],
-                        0,
-                        45,
-                        1
-                    ).build()
+                    )
+                    .getPointsByGenerationSquare(
+                        distance - 5,
+                        distance - 5,
+                        4,
+                        4
+                    )
+                    // .getPointByRotatingVector(
+                    //     [distance / 2, distance / 2, distance / 2, distance / 2],
+                    //     0,
+                    //     45,
+                    //     1
+                    // )
+                    .build()
                 );
             }
         }
@@ -65,12 +72,20 @@ export default class Engine {
             new EntityBuilder2(
                 "mouse",
                 new Point2("mouse_point", 0, 0)
-            ).getPointByRotatingVector(
+            )
+            // .getPointsByGenerationSquare(
+            //     50,
+            //     50,
+            //     5,
+            //     3
+            // )
+            .getPointByRotatingVector(
                 [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
                 0,
                 0,
                 1
-            ).setMoveAble(true).build()
+            )
+            .setMoveAble(true).build()
         );
 
         this.grid = new QuadTreeFromCorner(
@@ -100,9 +115,6 @@ export default class Engine {
             if (mouse != null) {
                 mouse.moveMeTo(mouseHandler.x, mouseHandler.y);
 
-                // mouse.centerPoint.futureX = mouseHandler.x;
-                // mouse.centerPoint.futureY = mouseHandler.y;
-                // mouse.centerPoint.changed = true;
             }
         }
 
@@ -116,7 +128,7 @@ export default class Engine {
 
             if (collisionSet.size != 0) {
                 console.log(collisionSet);
-
+                //TODO terrain should not be able to colide with another terrain
                 for (const collision of collisionSet) {
                     for (const entityId of collision.entitiesId) {
                         if (entityId.includes("terrain")) {

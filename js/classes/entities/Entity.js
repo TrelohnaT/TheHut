@@ -98,7 +98,7 @@ export default class Entity {
 
 
     drawMe(ctx) {
-        this.centerPoint.drawMe(ctx);
+        //this.centerPoint.drawMe(ctx);
 
         for (const [key, value] of this.bodyPointMap) {
             value.drawMe(ctx);

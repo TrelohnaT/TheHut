@@ -1,4 +1,5 @@
 import Calculations from "../common/Calculations.js";
+import Point2 from "../geometry/Point2.js";
 
 
 
@@ -11,7 +12,71 @@ export default class EntityStrategies {
     constructor() {
     }
 
+    /**
+     * 
+     * @param {String} id 
+     * @param {Point2} centerPoint 
+     * @param {Number} width 
+     * @param {Number} height 
+     * @param {Number} pointsOnX 
+     * @param {Number} pointsOnY
+     * @returns {Map<String, Point2>}
+     */
+    static generatePointsForSquare(
+        id,
+        centerPoint,
+        width,
+        height,
+        pointsOnX,
+        pointsOnY
+    ) {
+        let map = new Map();
 
+        let startX = centerPoint.x - width / 2;
+        let startY = centerPoint.y - height / 2;
+
+        let stepOnX = width / pointsOnX;
+        let stepOnY = height / pointsOnY;
+
+        for (let i = 0; i < pointsOnY; i++) {
+            for (let j = 0; j < pointsOnX; j++) {
+                // first and last line
+                if (i == 0 || i == (pointsOnY - 1)) {
+                    map.set(
+                        id + "_bodyPoint_" + i + "_" + j,
+                        new Point2(
+                            id + "_bodyPoint_" + i + "_" + j,
+                            startX + (j * stepOnX),
+                            startY + (i * stepOnY)
+                        )
+                    );
+                } else if (j == 0 || j == (pointsOnX - 1)) {
+                    map.set(
+                        id + "_bodyPoint_" + i + "_" + j,
+                        new Point2(
+                            id + "_bodyPoint_" + i + "_" + j,
+                            startX + (j * stepOnX),
+                            startY + (i * stepOnY)
+                        )
+                    );
+                }
+            }
+        }
+
+        console.log("points in map: " + map.size);
+        return map;
+    }
+
+    /**
+     * 
+     * @param {String} id 
+     * @param {Array<String>} distanceFromCenter 
+     * @param {Point2} centerPoint 
+     * @param {Number} offsetAngle 
+     * @param {Number} baseRotation 
+     * @param {Number} sizeScale 
+     * @returns {Map<String, Point2>}
+     */
     static generatePointsByRotationVector(
         id,
         distanceFromCenter,

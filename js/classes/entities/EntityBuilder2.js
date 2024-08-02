@@ -35,6 +35,24 @@ export default class EntityBuilder2 {
         return this;
     }
 
+    getPointsByGenerationSquare(
+        width,
+        height,
+        pointsOnX,
+        pointsOnY
+    ) {
+        this.bodyPointMap = EntityStrategies.generatePointsForSquare(
+            this.id,
+            this.centerPoint,
+            width,
+            height,
+            pointsOnX,
+            pointsOnY
+        );
+
+        return this;
+    }
+
     /**
      * 
      * @param {Array<Number>} distanceFromCenter 
