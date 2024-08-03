@@ -7,7 +7,6 @@
 </head>
 
 <body onload="starter()">  
-<!-- onkeydown="keyEvent(event, 'down')" onkeyup="keyEvent(event, 'up')">  -->
 
     <div id="fps_counter"></div> 
     <span>0</span>
@@ -20,24 +19,23 @@
     </div>
     
     <div>
+        <label for="pointCount">PointCount: </label>
+        <label id="pointCount"></label>
+    </div>
+
+    <div>
         <label for="entityCount">entityCount: </label>
         <span id="entityCount"></span>
 
         <label for="seeGrid">seeGrid</label>
-        <input type="checkbox" id="seeGrid" checked>
+        <input type="checkbox" id="seeGrid">
 
     </div>
-
-
-
 
     <canvas id="canvas"></canvas>
 
 
 </body>
-
-
-
 
 
 

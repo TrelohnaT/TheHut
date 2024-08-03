@@ -9,6 +9,9 @@ export default class EntityStrategies {
     static strategyPointsByRotationVector = "generatePointsByRotationVector";
     static strategySquare = "strategySquare";
 
+    static kindRectangle = "rectangle";
+    static kindSymetric = "symetric";
+
     constructor() {
     }
 

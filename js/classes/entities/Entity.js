@@ -6,26 +6,38 @@ export default class Entity {
 
     /**
      * 
-     * @param {String} id 
+     * @param {String} id  
+     * @param {String} kind 
      * @param {Point2} centerPoint 
      * @param {Map<String, Point2>} bodyPointMap 
      * @param {boolean} moveAble 
-     * @param {String} fillInCollor 
+     * @param {String} fillInCollor
+     * @param {boolean} seeCenterPoint 
+     * @param {boolean} seeBodyPoints 
+     * @param {boolean} pointLifeTimeAutonomy 
      */
     constructor(
         id,
+        kind,
         centerPoint,
         bodyPointMap,
         moveAble,
-        fillInCollor
+        fillInCollor,
+        seeCenterPoint,
+        seeBodyPoints,
+        pointLifeTimeAutonomy
     ) {
         this.id = id;
+        this.kind = kind;
         this.centerPoint = centerPoint;
         this.moveAble = moveAble;
         this.fillInCollor = fillInCollor;
 
+        this.seeCenterPoint = seeCenterPoint;
+        this.seeBodyPoints = seeBodyPoints;
+        this.pointLifeTimeAutonomy = pointLifeTimeAutonomy;
+
         // generated
-        this.kind = "Entity2";
         this.bodyPointMap = bodyPointMap;
         this.isDoomed = false;
 
@@ -51,7 +63,6 @@ export default class Entity {
                 value.moveMeY();
             }
 
-
             if (this.centerPoint.changed) {
                 this.centerPoint.handleOutOfBorder(maxX, maxY);
                 this.centerPoint.resetChangedFlag();
@@ -66,6 +77,12 @@ export default class Entity {
         }
 
         return this;
+    }
+
+    destroy() {
+        this.isDoomed = true;
+        this.bodyPointMap.clear();
+        return this.id;
     }
 
     /**
@@ -88,20 +105,45 @@ export default class Entity {
             value.setVectorByStep(stepX, stepY);
             value.changed = true;
         }
-
     }
 
-    destroy() {
-        this.isDoomed = true;
-        return this.id;
+    /**
+     * If pointId is in bodyPointMap, its lifetime will be shorten.
+     * If lifeTime reach 0, point is "doomed" and removed.
+     * @param {String} collisonPointId 
+     */
+    handlePointColision(collisonPointId) {
+        if (this.bodyPointMap.has(collisonPointId)) {
+            console.log("lifetimshorten: " + collisonPointId);
+            let point = this.bodyPointMap.get(collisonPointId);
+            console.log(point);
+            point.decreaseLifeTime();
+            if (point.doomed) {
+                this.bodyPointMap.delete(collisonPointId);
+            }
+        }
     }
 
-
+    /**
+     * 
+     * @param {CanvasRenderingContext2D} ctx 
+     */
     drawMe(ctx) {
         //this.centerPoint.drawMe(ctx);
 
         for (const [key, value] of this.bodyPointMap) {
             value.drawMe(ctx);
+        }
+
+        if (this.kind == EntityStrategies.kindRectangle) {
+
+            ctx.fillStyle = this.fillInCollor;
+            let tmp = [...this.bodyPointMap.values()];
+
+
+            ctx.fillStyle = this.fillInCollor;
+            ctx.fillRect(tmp[0].x, tmp[0].y, tmp[tmp.length - 1].x - tmp[0].x, tmp[tmp.length - 1].y - tmp[0].y);
+            ctx.restore();
         }
 
     }

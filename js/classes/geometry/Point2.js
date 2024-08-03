@@ -18,8 +18,18 @@ export default class Point2 {
         this.lengthY = 0;
         this.angle = 0;
 
-        this.changed = true;
+        this.lifeTime = 1;
 
+        this.changed = true;
+        this.doomed = false;
+
+    }
+
+    decreaseLifeTime() {
+        this.lifeTime = this.lifeTime - 1;
+        if (this.lifeTime == 0) {
+            this.doomed = true;
+        }
     }
 
     /**

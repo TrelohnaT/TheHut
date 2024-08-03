@@ -4,6 +4,7 @@ import Entity2 from "./entities/Entity.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
 import EntityBuilder2 from "./entities/EntityBuilder2.js";
+import Collision from "./util/Collision.js";
 
 export default class Engine {
 
@@ -16,10 +17,7 @@ export default class Engine {
         /**@type {QuadTreeFromCorner} */
         this.grid = null;
 
-        this.macroPlayer = "player";
 
-        this.entityKind = "entity";
-        this.terrainKind = "terrain";
 
         this.gravity = 0;
         this.speed = 5;
@@ -51,19 +49,13 @@ export default class Engine {
                             startTerrainY - (j * distance)
                         )
                     )
-                    .getPointsByGenerationSquare(
-                        distance - 5,
-                        distance - 5,
-                        4,
-                        4
-                    )
-                    // .getPointByRotatingVector(
-                    //     [distance / 2, distance / 2, distance / 2, distance / 2],
-                    //     0,
-                    //     45,
-                    //     1
-                    // )
-                    .build()
+                        .getPointsByGenerationSquare(
+                            distance - 5,
+                            distance - 5,
+                            4,
+                            4
+                        )
+                        .build()
                 );
             }
         }
@@ -73,19 +65,14 @@ export default class Engine {
                 "mouse",
                 new Point2("mouse_point", 0, 0)
             )
-            // .getPointsByGenerationSquare(
-            //     50,
-            //     50,
-            //     5,
-            //     3
-            // )
-            .getPointByRotatingVector(
-                [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
-                0,
-                0,
-                1
-            )
-            .setMoveAble(true).build()
+                .getPointByRotatingVector(
+                    [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+                    0,
+                    0,
+                    1
+                )
+                .setPointLifeTimeAutonomy(true)
+                .setMoveAble(true).build()
         );
 
         this.grid = new QuadTreeFromCorner(
@@ -108,7 +95,10 @@ export default class Engine {
      */
     update(ctx, keyHandler, mouseHandler, canvasWidth, canvasHeight) {
 
+        /**@type {String} */
         let doomedEntites = new Set();
+        /**@type {Set<Collision>} */
+        let collisionSet = new Set();
         this.logToDom();
         if (this.entityMap.size > 0) {
             let mouse = this.entityMap.get("mouse");
@@ -118,29 +108,37 @@ export default class Engine {
             }
         }
 
-        for (const [key, value] of this.entityMap) {
-            value.update(canvasWidth, canvasHeight);
-        }
 
         if (this.grid != null) {
             // return set of collisions
-            let collisionSet = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
+            collisionSet = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
+            
+            if (document.getElementById("seeGrid").checked) {
+                this.grid.drawMe(ctx);
+            }
+        }
 
+        for (const [key, value] of this.entityMap) {
             if (collisionSet.size != 0) {
-                console.log(collisionSet);
-                //TODO terrain should not be able to colide with another terrain
-                for (const collision of collisionSet) {
-                    for (const entityId of collision.entitiesId) {
-                        if (entityId.includes("terrain")) {
-                            doomedEntites.add(this.entityMap.get(entityId).destroy());
+                for (const colision of collisionSet) {
+                    for (const entityId of colision.entitiesId) {
+                        // each point has its own lifetime
+                        if (value.pointLifeTimeAutonomy) {
+                            value.handlePointColision(colision.pointId);
+                        } else {
+                            if (entityId.includes("terrain")) {
+                                doomedEntites.add(entityId);
+                            }
                         }
                     }
                 }
             }
 
-            if (document.getElementById("seeGrid").checked) {
-                this.grid.drawMe(ctx);
+            if(value.bodyPointMap.size == 0) {
+                doomedEntites.add(value.id);
             }
+
+            value.update(canvasWidth, canvasHeight);
         }
 
         // delete doomed entites
@@ -157,6 +155,14 @@ export default class Engine {
 
     logToDom() {
         document.getElementById("entityCount").innerHTML = this.entityMap.size;
+
+        let pointCount = 0;
+
+        this.entityMap.forEach(value => {
+            pointCount = pointCount + value.bodyPointMap.size;
+        });
+
+        document.getElementById("pointCount").innerHTML = pointCount;
     }
 
 }

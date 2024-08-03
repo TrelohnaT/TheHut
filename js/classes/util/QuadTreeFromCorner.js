@@ -89,6 +89,7 @@ export default class QuadTreeFromCorner {
         //console.log("update: " + this.id);
         // each squere can have only entites from parent in them 
         let entitySet = new Set();
+        let pointSet = "";
         for (const parentChildId of parentEntitySet) {
             let entity = entityMap.get(parentChildId);
             if (entity != null) {
@@ -96,6 +97,7 @@ export default class QuadTreeFromCorner {
                     if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
                         // set of entites in this square
                         entitySet.add(entity.id);
+                        pointSet = value.id;
                     }
                 }
             }
@@ -120,7 +122,7 @@ export default class QuadTreeFromCorner {
                 // this only take place in leaf child
                 if (entitySet.size > 1) {
                     console.log("colision");
-                    colisionSet.add(new Collision("", this.id, entitySet));
+                    colisionSet.add(new Collision("", this.id, entitySet, pointSet));
                 }
 
             }
