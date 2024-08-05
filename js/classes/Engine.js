@@ -17,10 +17,10 @@ export default class Engine {
         /**@type {QuadTreeFromCorner} */
         this.grid = null;
 
-
-
         this.gravity = 0;
         this.speed = 5;
+
+        this.spawnedEntites = 0;
 
     }
 
@@ -80,8 +80,7 @@ export default class Engine {
             new Point2("root", 0, 0),
             canvasWidth,
             canvasWidth,
-            0,
-            8
+            0
         );
     }
 
@@ -108,11 +107,31 @@ export default class Engine {
             }
         }
 
+        if (mouseHandler.leftBtn) {
+            let explodeId = "exploded_" + this.spawnedEntites++;
+            let exploded = new EntityBuilder2(
+                explodeId,
+                new Point2(explodeId + "_point", mouseHandler.x, mouseHandler.y)
+            )
+                .getPointByRotatingVector(
+                    [30],
+                    0,
+                    0,
+                    1
+                )
+                .setMoveAble(true)
+                .setPointLifeTimeAutonomy(true)
+                .build();
+            console.log("spawnedEntities: " + this.spawnedEntites);
+            exploded.explode();
+            this.entityMap.set(explodeId, exploded);
+        }
 
+        // update quadtree and check collisions
         if (this.grid != null) {
             // return set of collisions
             collisionSet = this.grid.update(this.entityMap, Array.from(this.entityMap.keys()), new Set());
-            
+
             if (document.getElementById("seeGrid").checked) {
                 this.grid.drawMe(ctx);
             }
@@ -122,19 +141,21 @@ export default class Engine {
             if (collisionSet.size != 0) {
                 for (const colision of collisionSet) {
                     for (const entityId of colision.entitiesId) {
-                        // each point has its own lifetime
-                        if (value.pointLifeTimeAutonomy) {
-                            value.handlePointColision(colision.pointId);
-                        } else {
-                            if (entityId.includes("terrain")) {
-                                doomedEntites.add(entityId);
+                        for (const collisionPointId of colision.pointId) {
+                            // each point has its own lifetime
+                            if (value.pointLifeTimeAutonomy) {
+                                value.handlePointColision(collisionPointId);
+                            } else {
+                                if (entityId.includes("terrain")) {
+                                    doomedEntites.add(entityId);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if(value.bodyPointMap.size == 0) {
+            if (value.bodyPointMap.size == 0) {
                 doomedEntites.add(value.id);
             }
 

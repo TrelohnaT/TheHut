@@ -1,3 +1,4 @@
+import Point2 from "./Point2";
 
 
 export default class Vector2 {
@@ -30,15 +31,15 @@ export default class Vector2 {
         this.angle = angle;
         this.length = length;
 
-        let endPoint = Calculations.point_B_angle_B_length_c_get_point_A(
-            new Point("A", this.startX, this.startY),
+        let endPoint = Calculations.point_B_angle_B_length_c_get_point2_A(
+            new Point2("A", this.startX, this.startY),
             angle,
             length);
 
         this.endX = endPoint.x;
         this.endY = endPoint.y;
     }
-
+    
 
 }
 

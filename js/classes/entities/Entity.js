@@ -48,6 +48,20 @@ export default class Entity {
 
     }
 
+    explode() {
+
+        
+        for(const [key, value] of this.bodyPointMap) {
+            let vector = Calculations.getVectorBetweenTwoPoints(this.centerPoint.x, this.centerPoint.y, value.x, value.y);
+
+            let scale = 5;
+            // this sets the vector just once
+            value.setVectorByStep(vector.vectorX / scale, vector.vectorY / scale);
+
+        }
+
+    }
+
     setUp() {
         return this;
     }

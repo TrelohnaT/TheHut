@@ -29,6 +29,10 @@ export function keyEvent(event, type) {
     keyHandler.handleEvent(event.key, type);
 }
 
+export function mouseEvent() {
+    console.log("aaaaa");
+    //mouseHandler.handleEvent(event, type);
+}
 
 mainLoop();
 /**
@@ -43,6 +47,8 @@ function mainLoop() {
     requestAnimationFrame(mainLoop);
     frames++;
 
+    
+    mouseHandler.clear();
 }
 
 setInterval(() => {
@@ -60,13 +66,13 @@ document.getElementById("canvas").onmousemove = function (evt) {
     let scaleY = canvas.height / rect.height;
     mouseHandler.x = (evt.clientX - rect.left) * scaleX;
     mouseHandler.y = (evt.clientY - rect.top) * scaleY;
-
+    
 }
 document.getElementById("canvas").onmousedown = function (evt) {
-    mouseHandler.handleEvent(evt.button);
+    mouseHandler.handleEvent(evt.button, "onmousedown");
 }
 document.getElementById("canvas").onmouseup = function (evt) {
-    mouseHandler.handleEvent(evt.button);
+    mouseHandler.handleEvent(evt.button, "onmouseup");
 }
 
 document.getElementById("maxDeep").onchange = function (evt) {
