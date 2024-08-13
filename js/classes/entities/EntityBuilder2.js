@@ -4,6 +4,10 @@ import EntityStrategies from "./EntityStrategies.js";
 
 export default class EntityBuilder2 {
 
+    
+    static kindMouse = "mouse";
+    static kindTerrain = "terrain";
+
     /**
      * 
      * @param {String} id 
@@ -11,12 +15,14 @@ export default class EntityBuilder2 {
      */
     constructor(
         id,
+        kind,
         centerPoint
     ) {
         this.id = id;
+        this.kind = kind;
         this.centerPoint = centerPoint;
 
-        this.kind = "unknown";
+        //this.kind = "unknown";
         this.bodyPointMap = new Map;
 
         this.moveAble = false;
@@ -84,22 +90,25 @@ export default class EntityBuilder2 {
      * @param {Number} height 
      * @param {Number} pointsOnX 
      * @param {Number} pointsOnY 
+     * @param {Map<String, boolean>} hitAbleSides
      * @returns {EntityBuilder2}
      */
     getPointsByGenerationSquare(
         width,
         height,
         pointsOnX,
-        pointsOnY
+        pointsOnY,
+        hitAbleSides
     ) {
-        this.kind = EntityStrategies.kindRectangle;
+        //this.kind = EntityStrategies.kindRectangle;
         this.bodyPointMap = EntityStrategies.generatePointsForSquare(
             this.id,
             this.centerPoint,
             width,
             height,
             pointsOnX,
-            pointsOnY
+            pointsOnY,
+            hitAbleSides
         );
 
         return this;
@@ -119,7 +128,7 @@ export default class EntityBuilder2 {
         baseRotation,
         sizeScale
     ) {
-        this.kind = EntityStrategies.kindSymetric;
+        //this.kind = EntityStrategies.kindSymetric;
         this.bodyPointMap = EntityStrategies.generatePointsByRotationVector(
             this.id,
             distanceFromCenter,

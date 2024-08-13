@@ -23,6 +23,7 @@ export default class EntityStrategies {
      * @param {Number} height 
      * @param {Number} pointsOnX 
      * @param {Number} pointsOnY
+     * @param {Map<String, boolean>} hitAbleSides controls which side of the square will have collisions
      * @returns {Map<String, Point2>}
      */
     static generatePointsForSquare(
@@ -31,7 +32,8 @@ export default class EntityStrategies {
         width,
         height,
         pointsOnX,
-        pointsOnY
+        pointsOnY,
+        hitAbleSides
     ) {
         let map = new Map();
 
@@ -41,27 +43,42 @@ export default class EntityStrategies {
         let stepOnX = width / pointsOnX;
         let stepOnY = height / pointsOnY;
 
-        for (let i = 0; i < pointsOnY; i++) {
-            for (let j = 0; j < pointsOnX; j++) {
+        for (let y = 0; y < pointsOnY; y++) {
+            for (let x = 0; x < pointsOnX; x++) {
+
                 // first and last line
-                if (i == 0 || i == (pointsOnY - 1)) {
-                    map.set(
-                        id + "_bodyPoint_" + i + "_" + j,
-                        new Point2(
-                            id + "_bodyPoint_" + i + "_" + j,
-                            startX + (j * stepOnX),
-                            startY + (i * stepOnY)
-                        )
+                if (y == 0 || y == (pointsOnY - 1)) {
+                    let point = new Point2(
+                        id + "_bodyPoint_" + y + "_" + x,
+                        startX + (x * stepOnX),
+                        startY + (y * stepOnY)
                     );
-                } else if (j == 0 || j == (pointsOnX - 1)) {
-                    map.set(
-                        id + "_bodyPoint_" + i + "_" + j,
-                        new Point2(
-                            id + "_bodyPoint_" + i + "_" + j,
-                            startX + (j * stepOnX),
-                            startY + (i * stepOnY)
-                        )
+
+                    if (y == 0 && !hitAbleSides.get("top")) {
+                        point.setCollision(false);
+                    }
+
+                    if (y == (pointsOnY - 1) && !hitAbleSides.get("bottom")) {
+                        point.setCollision(false);
+                    }
+                    map.set(id + "_bodyPoint_" + y + "_" + x, point);
+
+                } else if (x == 0 || x == (pointsOnX - 1)) {
+                    let point = new Point2(
+                        id + "_bodyPoint_" + y + "_" + x,
+                        startX + (x * stepOnX),
+                        startY + (y * stepOnY)
                     );
+
+                    if(x == 0 && !hitAbleSides.get("left")) {
+                        point.setCollision(false);
+                    }
+                    
+                    if(x == (pointsOnX - 1) && !hitAbleSides.get("right")) {
+                        point.setCollision(false);
+                    }
+
+                    map.set(id + "_bodyPoint_" + y + "_" + x, point);
                 }
             }
         }

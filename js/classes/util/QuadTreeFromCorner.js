@@ -88,10 +88,12 @@ export default class QuadTreeFromCorner {
             let entity = entityMap.get(parentChildId);
             if (entity != null) {
                 for (const [key, value] of entity.bodyPointMap) {
-                    if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
-                        // set of entites in this square
-                        entitySet.add(entity.id);
-                        pointSet.add(value.id);
+                    if (value.collisions) {
+                        if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
+                            // set of entites in this square
+                            entitySet.add(entity.id);
+                            pointSet.add(value.id);
+                        }
                     }
                 }
             }

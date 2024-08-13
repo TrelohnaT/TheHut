@@ -50,8 +50,7 @@ export default class Entity {
 
     explode() {
 
-        
-        for(const [key, value] of this.bodyPointMap) {
+        for (const [key, value] of this.bodyPointMap) {
             let vector = Calculations.getVectorBetweenTwoPoints(this.centerPoint.x, this.centerPoint.y, value.x, value.y);
 
             let scale = 5;
@@ -61,6 +60,7 @@ export default class Entity {
         }
 
     }
+
 
     setUp() {
         return this;
@@ -156,7 +156,7 @@ export default class Entity {
 
 
             ctx.fillStyle = this.fillInCollor;
-            ctx.fillRect(tmp[0].x, tmp[0].y, tmp[tmp.length - 1].x - tmp[0].x, tmp[tmp.length - 1].y - tmp[0].y);
+            //ctx.fillRect(tmp[0].x, tmp[0].y, tmp[tmp.length - 1].x - tmp[0].x, tmp[tmp.length - 1].y - tmp[0].y);
             ctx.restore();
         }
 
@@ -165,13 +165,39 @@ export default class Entity {
     /**
      * 
      * @param {Boolean} value 
-     * @returns {ThisType}
+     * @returns {Entity}
      */
     setMoveAble(value) {
         this.moveAble = value;
         return this;
     }
 
+    /**
+     * 
+     * @param {Map<String, Point2>} value 
+     * @returns {Entity}
+     */
+    setBodyPointMap(value) {
+        this.bodyPointMap = value;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {boolean} top 
+     * @param {boolean} right 
+     * @param {boolean} bottom 
+     * @param {boolean} left 
+     * @returns {Map<String, boolean>}
+     */
+    static getHitAbleMap(top, right, bottom, left) {
+        let map = new Map();
+        map.set("top", top);
+        map.set("right", right);
+        map.set("bottom", bottom);
+        map.set("left", left);
+        return map;
+    }
 
 }
 

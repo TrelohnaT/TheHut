@@ -1,10 +1,12 @@
-import KeyHandler from "./util/KeyHandler.js";
-import MouseHandler from "./util/MouseHnadler.js";
+import KeyHandler from "./handlers/KeyHandler.js";
+import MouseHandler from "./handlers/MouseHnadler.js";
 import Entity2 from "./entities/Entity.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
 import EntityBuilder2 from "./entities/EntityBuilder2.js";
 import Collision from "./util/Collision.js";
+import Terrain from "./util/Terrain.js";
+import Calculations from "./common/Calculations.js";
 
 export default class Engine {
 
@@ -16,6 +18,9 @@ export default class Engine {
 
         /**@type {QuadTreeFromCorner} */
         this.grid = null;
+
+        /**@type {Terrain} */
+        this.terrain = null;
 
         this.gravity = 0;
         this.speed = 5;
@@ -30,6 +35,8 @@ export default class Engine {
         this.entityMap.clear();
         this.grid = null;
 
+        this.terrain = new Terrain("terrain", canvasHeight, canvasHeight);
+
         let distance = 50;
 
         let terrainPoints = [8, 8, 8];
@@ -38,31 +45,35 @@ export default class Engine {
         let startTerrainY = canvasHeight - 25;
 
         // X axis
-        for (let i = 0; i < terrainPoints.length; i++) {
-            // y axis
-            for (let j = 0; j < terrainPoints[i]; j++) {
-                this.entityMap.set("terrain_entity_" + i + "_" + j,
-                    new EntityBuilder2(
-                        "terrain_entity_" + i + "_" + j,
-                        new Point2("terrain_centerpoint_" + i + "_" + j,
-                            startTerrainX + (i * distance),
-                            startTerrainY - (j * distance)
-                        )
-                    )
-                        .getPointsByGenerationSquare(
-                            distance - 5,
-                            distance - 5,
-                            4,
-                            4
-                        )
-                        .build()
-                );
-            }
-        }
+        // for (let i = 0; i < terrainPoints.length; i++) {
+        //     // y axis
+        //     for (let j = 0; j < terrainPoints[i]; j++) {
+        //         this.entityMap.set("terrain_entity_" + i + "_" + j,
+        //             new EntityBuilder2(
+        //                 "terrain_entity_" + i + "_" + j,
+        //                 new Point2("terrain_centerpoint_" + i + "_" + j,
+        //                     startTerrainX + (i * distance),
+        //                     startTerrainY - (j * distance)
+        //                 )
+        //             )
+        //                 .getPointsByGenerationSquare(
+        //                     distance - 5,
+        //                     distance - 5,
+        //                     4,
+        //                     4
+        //                 )
+        //                 .build()
+        //         );
+        //     }
+        // }
+
+        Calculations.addMapToMap(this.entityMap, this.terrain.setUp(canvasWidth, canvasHeight));
+
 
         this.entityMap.set("mouse",
             new EntityBuilder2(
                 "mouse",
+                EntityBuilder2.kindMouse,
                 new Point2("mouse_point", 0, 0)
             )
                 .getPointByRotatingVector(
@@ -111,6 +122,7 @@ export default class Engine {
             let explodeId = "exploded_" + this.spawnedEntites++;
             let exploded = new EntityBuilder2(
                 explodeId,
+                EntityBuilder2.kindMouse, // TODO NOT safe
                 new Point2(explodeId + "_point", mouseHandler.x, mouseHandler.y)
             )
                 .getPointByRotatingVector(
@@ -161,6 +173,8 @@ export default class Engine {
 
             value.update(canvasWidth, canvasHeight);
         }
+
+        Calculations.addMapToMap(this.entityMap, this.terrain.update(doomedEntites));
 
         // delete doomed entites
         for (const doomed of doomedEntites) {

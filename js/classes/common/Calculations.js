@@ -111,5 +111,17 @@ export default class Calculations {
         return target;
     }
 
+    /**
+     * 
+     * @param {Map<>} target 
+     * @param {Map<>} toAdd 
+     * @returns {Map<>}
+     */
+    static addMapToMap(target, toAdd) {
+        for(const [key,value] of toAdd) {
+            target.set(key, value);
+        }
+        return target;
+    }
 
 }

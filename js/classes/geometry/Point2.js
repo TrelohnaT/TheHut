@@ -22,7 +22,13 @@ export default class Point2 {
 
         this.changed = true;
         this.doomed = false;
+        this.collisions = true;
 
+    }
+
+    setCollision(value) {
+        this.collisions = value;
+        return this;
     }
 
     decreaseLifeTime() {

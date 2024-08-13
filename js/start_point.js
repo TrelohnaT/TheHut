@@ -1,6 +1,6 @@
 import Engine from "./classes/Engine.js";
-import KeyHandler from "./classes/util/KeyHandler.js";
-import MouseHandler from "./classes/util/MouseHnadler.js";
+import KeyHandler from "./classes/handlers/KeyHandler.js";
+import MouseHandler from "./classes/handlers/MouseHnadler.js";
 
 
 let canvas = document.getElementById("canvas");
