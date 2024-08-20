@@ -35,7 +35,21 @@ export default class Engine {
         this.entityMap.clear();
         this.grid = null;
 
-        this.terrain = new Terrain("terrain", canvasHeight, canvasHeight);
+        let terrainBluePrint = [
+            // [0, 0, 0, 0],
+            // [0, 1, 1, 0],
+            // [0, 1, 1, 0],
+            // [0, 0, 0, 0]
+            [0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1],
+            [1, 0, 1, 0, 0, 0],
+            [1, 1, 1, 0, 0, 0],
+            [1, 1, 1, 0, 0, 0],
+            [1, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ];
+
+        this.terrain = new Terrain("terrain", canvasHeight, canvasHeight, terrainBluePrint);
 
         let distance = 50;
 

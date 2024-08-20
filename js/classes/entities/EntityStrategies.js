@@ -54,12 +54,12 @@ export default class EntityStrategies {
                         startY + (y * stepOnY)
                     );
 
-                    if (y == 0 && !hitAbleSides.get("top")) {
-                        point.setCollision(false);
+                    if (y == 0) {
+                        point.setCollision(hitAbleSides.get("top"));
                     }
 
-                    if (y == (pointsOnY - 1) && !hitAbleSides.get("bottom")) {
-                        point.setCollision(false);
+                    if (y == (pointsOnY - 1)) {
+                        point.setCollision(hitAbleSides.get("bottom"));
                     }
                     map.set(id + "_bodyPoint_" + y + "_" + x, point);
 
@@ -70,12 +70,12 @@ export default class EntityStrategies {
                         startY + (y * stepOnY)
                     );
 
-                    if(x == 0 && !hitAbleSides.get("left")) {
-                        point.setCollision(false);
+                    if(x == 0) {
+                        point.setCollision(hitAbleSides.get("left"));
                     }
                     
-                    if(x == (pointsOnX - 1) && !hitAbleSides.get("right")) {
-                        point.setCollision(false);
+                    if(x == (pointsOnX - 1)) {
+                        point.setCollision(hitAbleSides.get("right"));
                     }
 
                     map.set(id + "_bodyPoint_" + y + "_" + x, point);
@@ -103,7 +103,8 @@ export default class EntityStrategies {
         centerPoint,
         offsetAngle,
         baseRotation,
-        sizeScale
+        sizeScale,
+        colision
     ) {
         let map = new Map();
         let chunckAngle = 360 / distanceFromCenter.length;
@@ -119,7 +120,7 @@ export default class EntityStrategies {
                     distanceFromCenter[i - 1] * sizeScale,
                     // id of point
                     id + "_bodyPoint_" + i
-                )
+                ).setCollision(colision)
             );
         }
         return map;

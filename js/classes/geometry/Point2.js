@@ -22,7 +22,7 @@ export default class Point2 {
 
         this.changed = true;
         this.doomed = false;
-        this.collisions = true;
+        this.collisions = false;
 
     }
 

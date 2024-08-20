@@ -126,7 +126,8 @@ export default class EntityBuilder2 {
         distanceFromCenter,
         offsetAngle,
         baseRotation,
-        sizeScale
+        sizeScale,
+        collision = true
     ) {
         //this.kind = EntityStrategies.kindSymetric;
         this.bodyPointMap = EntityStrategies.generatePointsByRotationVector(
@@ -135,7 +136,8 @@ export default class EntityBuilder2 {
             this.centerPoint,
             offsetAngle,
             baseRotation,
-            sizeScale
+            sizeScale,
+            collision
         );
         return this;
     }

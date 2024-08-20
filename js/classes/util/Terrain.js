@@ -13,7 +13,7 @@ export default class Terrain {
      * @param {Number} canvasHeight 
      * @param {Number[][]} terrainBlueprint 
      */
-    constructor(id, canvasWidth, canvasHeight, terrainBlueprint = [[1, 1, 1, 1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 1, 1], [1, 0, 1]]) {
+    constructor(id, canvasWidth, canvasHeight, terrainBlueprint) {
         this.id = id;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
@@ -31,31 +31,55 @@ export default class Terrain {
         let distance = 50;
 
         let startTerrainX = 125;
-        let startTerrainY = this.canvasHeight - 125;
+        let startTerrainY = 125;
 
         // x axis
-        for (let x = 0; x < this.terrainBlueprint.length; x++) {
-            for (let y = 0; y < this.terrainBlueprint[x].length; y++) {
+        for (let y = 0; y < this.terrainBlueprint.length; y++) {
+            for (let x = 0; x < this.terrainBlueprint[y].length; x++) {
 
-                if (this.terrainBlueprint[x][y] == 0) {
+                if (this.terrainBlueprint[y][x] == 0) {
 
-                } else if (this.terrainBlueprint[x][y] == 1) {
+                } else if (this.terrainBlueprint[y][x] == 1) {
 
                     // TODO corner points are also disabeled
 
                     // determinate which sides have some entity next to it and switch on/off collisions
-                    let top = (this.terrainBlueprint[x][y + 1] != 1); //false;
-                    let right = (x + 1 == this.terrainBlueprint.length || this.terrainBlueprint[x + 1][y] != 1);
-                    let bottom = (this.terrainBlueprint[x][y - 1] != 1);
-                    let left = (x == 0 || this.terrainBlueprint[x - 1][y] != 1);
+                    let top = false;
+                    try {
+                        top = ((y - 1) >= 0 && this.terrainBlueprint[y - 1][x] != 1); //false;
+                    } catch (e) {
+                        console.log("top:")
+                        console.log(e);
+                    }
+                    let right = false;
+                    try {
+                        right = ((x + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y][x + 1] != 1);
+                    } catch (e) {
+                        console.log("right:")
+                        console.log(e);
+                    }
+                    let bottom = false; //= (this.terrainBlueprint[x][y + 1] == 0);
+                    try {
+                        bottom = ((y + 1) <= this.terrainBlueprint[y].length && this.terrainBlueprint[y + 1][x] != 1)
+                    } catch (e) {
+                        console.log("bottom:")
+                        console.log(e);
+                    }
+                    let left = false; //= (x == 0 || this.terrainBlueprint[x + 1][y] == 0);
+                    try {
+                        left = ((x - 1) >= 0 && this.terrainBlueprint[y][x - 1] != 1);
+                    } catch (e) {
+                        console.log("left:")
+                        console.log(e);
+                    }
 
                     map.set("terrain_entity_" + x + "_" + y,
                         new EntityBuilder2(
                             EntityBuilder2.kindTerrain + "_entity_" + x + "_" + y,
                             EntityBuilder2.kindTerrain,
                             new Point2("terrain_centerpoint_" + x + "_" + y,
-                                startTerrainX + (x * distance),
-                                startTerrainY - (y * distance)
+                                (x * distance) + distance / 2,
+                                (y * distance) + distance / 2
                             )
                         )
                             .getPointsByGenerationSquare(
@@ -95,7 +119,7 @@ export default class Terrain {
                 let y = parts[parts.length - 1];
                 console.log("x: " + x);
                 console.log("y: " + y);
-                this.terrainBlueprint[x][y] = 0;
+                this.terrainBlueprint[y][x] = 0;
                 updateTerrain = true;
             }
         }

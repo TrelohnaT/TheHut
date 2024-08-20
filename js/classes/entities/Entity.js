@@ -61,7 +61,6 @@ export default class Entity {
 
     }
 
-
     setUp() {
         return this;
     }
