@@ -4,7 +4,7 @@ import MouseHandler from "./classes/handlers/MouseHnadler.js";
 
 
 let canvas = document.getElementById("canvas");
-canvas.width = window.innerWidth - 20;
+canvas.width = window.innerWidth - 50;
 canvas.height = window.innerHeight - 50;
 let ctx = canvas.getContext("2d");
 

@@ -13,35 +13,32 @@ export default class Terrain {
      * @param {Number} canvasHeight 
      * @param {Number[][]} terrainBlueprint 
      */
-    constructor(id, canvasWidth, canvasHeight, terrainBlueprint) {
+    constructor(id, canvasWidth, canvasHeight, terrainBlueprint, blockSize = 50, gridLowerLimit = 10) {
         this.id = id;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.terrainBlueprint = terrainBlueprint;
         this.entityMap = new Map();
 
+        this.blockSize = blockSize;
+        this.gridLowerLimit = gridLowerLimit;
 
     }
 
     setUp() {
 
-
         let map = new Map();
 
-        let distance = 50;
+        let offsetX = this.gridLowerLimit / 2;
+        let offsetY = this.gridLowerLimit / 2;
 
-        let startTerrainX = 125;
-        let startTerrainY = 125;
-
-        // x axis
+        // generation of terrain block
         for (let y = 0; y < this.terrainBlueprint.length; y++) {
             for (let x = 0; x < this.terrainBlueprint[y].length; x++) {
 
                 if (this.terrainBlueprint[y][x] == 0) {
 
                 } else if (this.terrainBlueprint[y][x] == 1) {
-
-                    // TODO corner points are also disabeled
 
                     // determinate which sides have some entity next to it and switch on/off collisions
                     let top = false;
@@ -51,18 +48,18 @@ export default class Terrain {
                         console.log("top:")
                         console.log(e);
                     }
-                    let right = false;
-                    try {
-                        right = ((x + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y][x + 1] != 1);
-                    } catch (e) {
-                        console.log("right:")
-                        console.log(e);
-                    }
                     let bottom = false; //= (this.terrainBlueprint[x][y + 1] == 0);
                     try {
                         bottom = ((y + 1) <= this.terrainBlueprint[y].length && this.terrainBlueprint[y + 1][x] != 1)
                     } catch (e) {
                         console.log("bottom:")
+                        console.log(e);
+                    }
+                    let right = false;
+                    try {
+                        right = ((x + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y][x + 1] != 1);
+                    } catch (e) {
+                        console.log("right:")
                         console.log(e);
                     }
                     let left = false; //= (x == 0 || this.terrainBlueprint[x + 1][y] == 0);
@@ -78,15 +75,15 @@ export default class Terrain {
                             EntityBuilder2.kindTerrain + "_entity_" + x + "_" + y,
                             EntityBuilder2.kindTerrain,
                             new Point2("terrain_centerpoint_" + x + "_" + y,
-                                (x * distance) + distance / 2,
-                                (y * distance) + distance / 2
+                                (x * this.blockSize) + this.blockSize / 2 + 2.5,
+                                (y * this.blockSize) + this.blockSize / 2 + 2.5
                             )
                         )
                             .getPointsByGenerationSquare(
-                                distance - 5,
-                                distance - 5,
-                                8,
-                                8,
+                                this.blockSize,
+                                this.blockSize,
+                                this.blockSize / this.gridLowerLimit * 2,
+                                this.blockSize / this.gridLowerLimit * 2,
                                 Entity.getHitAbleMap(top, right, bottom, left)
                             )
                             .build()

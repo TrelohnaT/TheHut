@@ -43,42 +43,50 @@ export default class EntityStrategies {
         let stepOnX = width / pointsOnX;
         let stepOnY = height / pointsOnY;
 
+
         for (let y = 0; y < pointsOnY; y++) {
             for (let x = 0; x < pointsOnX; x++) {
+                let pointID = id + "_bodyPoint_" + y + "_" + x;
+                // points in middle are NOT created, only those on sides
 
                 // first and last line
                 if (y == 0 || y == (pointsOnY - 1)) {
+
                     let point = new Point2(
-                        id + "_bodyPoint_" + y + "_" + x,
+                        pointID,
                         startX + (x * stepOnX),
                         startY + (y * stepOnY)
                     );
 
                     if (y == 0) {
                         point.setCollision(hitAbleSides.get("top"));
-                    }
-
-                    if (y == (pointsOnY - 1)) {
+                    } else if (y == (pointsOnY - 1)) {
                         point.setCollision(hitAbleSides.get("bottom"));
                     }
-                    map.set(id + "_bodyPoint_" + y + "_" + x, point);
+                    map.set(pointID, point);
 
-                } else if (x == 0 || x == (pointsOnX - 1)) {
-                    let point = new Point2(
-                        id + "_bodyPoint_" + y + "_" + x,
-                        startX + (x * stepOnX),
-                        startY + (y * stepOnY)
-                    );
-
-                    if(x == 0) {
-                        point.setCollision(hitAbleSides.get("left"));
+                }
+                // left and right line
+                if (x == 0 || x == (pointsOnX - 1)) {
+                    let point;
+                    // for corner points (like x=0 y=0)
+                    if (map.has(pointID)) {
+                        point = map.get(pointID)
+                    } else {
+                        point = new Point2(
+                            pointID,
+                            startX + (x * stepOnX),
+                            startY + (y * stepOnY)
+                        );
                     }
-                    
-                    if(x == (pointsOnX - 1)) {
-                        point.setCollision(hitAbleSides.get("right"));
-                    }
 
-                    map.set(id + "_bodyPoint_" + y + "_" + x, point);
+                    if (x == 0) {
+                        point.setCollision(hitAbleSides.get("left"), true);
+                    } else if (x == (pointsOnX - 1)) {
+                        point.setCollision(hitAbleSides.get("right"), true);
+                    }
+                    map.set(pointID, point);
+
                 }
             }
         }

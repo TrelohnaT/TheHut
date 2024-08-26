@@ -13,8 +13,9 @@ export default class QuadTreeFromCorner {
      * @param {Number} width 
      * @param {Number} height 
      * @param {Number} deep 
+     * @param {Number} lowerLimit
      */
-    constructor(id, leftTopPoint, width, height, deep) {
+    constructor(id, leftTopPoint, width, height, deep, lowerLimit) {
         this.id = id;
         this.leftTopPoint = leftTopPoint;
         this.rightBottomPoint = new Point2("rightBottom", leftTopPoint.x + width, leftTopPoint.y + height);
@@ -27,7 +28,7 @@ export default class QuadTreeFromCorner {
 
         this.shouldSetUp = true;
 
-        this.lowLimit = 8;
+        this.lowLimit = lowerLimit;
 
         this.isLeaf = false;
 
@@ -48,28 +49,32 @@ export default class QuadTreeFromCorner {
             new Point2(this.id + "_left_top_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y),
             newWidth,
             newHeight,
-            this.deep + 1
+            this.deep + 1,
+            this.lowLimit
         ));
         this.childs.set(this.id + "_right_top", new QuadTreeFromCorner(
             this.id + "_right_top",
             new Point2(this.id + "_right_top_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y),
             newWidth,
             newHeight,
-            this.deep + 1
+            this.deep + 1,
+            this.lowLimit
         ));
         this.childs.set(this.id + "_left_bottom", new QuadTreeFromCorner(
             this.id + "_left_bottom",
             new Point2(this.id + "_left_bottom_" + this.deep, this.leftTopPoint.x, this.leftTopPoint.y + newHeight),
             newWidth,
             newHeight,
-            this.deep + 1
+            this.deep + 1,
+            this.lowLimit
         ));
         this.childs.set(this.id + "_right_bottom", new QuadTreeFromCorner(
             this.id + "_right_bottom",
             new Point2(this.id + "_right_bottom_" + this.deep, this.leftTopPoint.x + newWidth, this.leftTopPoint.y + newHeight),
             newWidth,
             newHeight,
-            this.deep + 1
+            this.deep + 1,
+            this.lowLimit
         ));
     }
 
@@ -82,7 +87,8 @@ export default class QuadTreeFromCorner {
     update(entityMap, parentEntitySet, colisionSet) {
         //console.log("update: " + this.id);
         // each squere can have only entites from parent in them 
-        let entitySet = new Set();
+        /**@type {String} */
+        let entityIdSet = new Set();
         let pointSet = new Set();
         for (const parentChildId of parentEntitySet) {
             let entity = entityMap.get(parentChildId);
@@ -91,7 +97,7 @@ export default class QuadTreeFromCorner {
                     if (value.collisions) {
                         if (Calculations.isPointBetweenThosePoints(value, this.leftTopPoint, this.rightBottomPoint)) {
                             // set of entites in this square
-                            entitySet.add(entity.id);
+                            entityIdSet.add(entity.id);
                             pointSet.add(value.id);
                         }
                     }
@@ -100,29 +106,39 @@ export default class QuadTreeFromCorner {
         }
 
         // some enties are in here
-        if (entitySet.size > 0) {
+        if (entityIdSet.size > 0) {
             if (this.shouldSetUp) {
                 this.setUp();
                 this.shouldSetUp = false;
             }
-
-            if (this.width >= this.lowLimit || this.height >= this.lowLimit) {
+            if (this.width > this.lowLimit || this.height > this.lowLimit) {
                 //if (this.deep < this.maxDeep) {
                 for (const [key, child] of this.childs) {
-                    colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entitySet, colisionSet));
+                    colisionSet = Calculations.addSetToSet(colisionSet, child.update(entityMap, entityIdSet, colisionSet));
                 }
-            } else if (this.width < this.lowLimit && this.height < this.lowLimit) {
-
-                this.isLeaf = true;
-                //else if (this.deep == this.maxDeep) {
+            } else if (this.width <= this.lowLimit && this.height <= this.lowLimit) {
                 // this only take place in leaf child
-                if (entitySet.size > 1) {
-                    console.log("colision");
-                    colisionSet.add(new Collision("", this.id, entitySet, pointSet));
+                //console.log("width: " + this.width + " height: " + this.height + " deep: " + this.deep);
+                this.isLeaf = true;
+                if (entityIdSet.size > 1) {
+                    let realCollision = false;
+                    
+                    for(let ent of entityIdSet) {
+                        if(!ent.includes("terrain")) {
+                            realCollision = true;
+                            break;
+                        }
+
+                    }
+
+                    if (realCollision) {
+                        console.log("colision");
+                        colisionSet.add(new Collision("", this.id, entityIdSet, pointSet));
+                    }
                 }
 
             }
-        } else if (entitySet.size == 0) {
+        } else if (entityIdSet.size == 0) {
             if (!this.shouldSetUp) {
                 //console.log("clearing");
                 this.childs.clear();

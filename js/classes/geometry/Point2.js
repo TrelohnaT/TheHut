@@ -3,6 +3,14 @@
 
 export default class Point2 {
 
+    /**
+     * 
+     * @param {String} id 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} radius 
+     * @param {String} color 
+     */
     constructor(id, x, y, radius = 1, color = "#000000") {
         this.id = id;
         this.x = x;
@@ -26,7 +34,16 @@ export default class Point2 {
 
     }
 
-    setCollision(value) {
+    /**
+     * 
+     * @param {boolean} value 
+     * @param {boolean} setOnlyTrue - for terrain
+     * @returns 
+     */
+    setCollision(value, setOnlyTrue = false) {
+        if(this.collisions && setOnlyTrue) {
+            return this;
+        }
         this.collisions = value;
         return this;
     }

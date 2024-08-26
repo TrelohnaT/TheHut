@@ -49,7 +49,12 @@ export default class Engine {
             [0, 0, 0, 0, 0, 0]
         ];
 
-        this.terrain = new Terrain("terrain", canvasHeight, canvasHeight, terrainBluePrint);
+        this.terrain = new Terrain(
+            "terrain",
+            canvasHeight,
+            canvasHeight,
+            terrainBluePrint
+        );
 
         let distance = 50;
 
@@ -58,31 +63,8 @@ export default class Engine {
         let startTerrainX = 25;
         let startTerrainY = canvasHeight - 25;
 
-        // X axis
-        // for (let i = 0; i < terrainPoints.length; i++) {
-        //     // y axis
-        //     for (let j = 0; j < terrainPoints[i]; j++) {
-        //         this.entityMap.set("terrain_entity_" + i + "_" + j,
-        //             new EntityBuilder2(
-        //                 "terrain_entity_" + i + "_" + j,
-        //                 new Point2("terrain_centerpoint_" + i + "_" + j,
-        //                     startTerrainX + (i * distance),
-        //                     startTerrainY - (j * distance)
-        //                 )
-        //             )
-        //                 .getPointsByGenerationSquare(
-        //                     distance - 5,
-        //                     distance - 5,
-        //                     4,
-        //                     4
-        //                 )
-        //                 .build()
-        //         );
-        //     }
-        // }
 
         Calculations.addMapToMap(this.entityMap, this.terrain.setUp(canvasWidth, canvasHeight));
-
 
         this.entityMap.set("mouse",
             new EntityBuilder2(
@@ -100,12 +82,16 @@ export default class Engine {
                 .setMoveAble(true).build()
         );
 
+        console.log("canvasWidth: " + canvasWidth)
+        console.log("canvasHeight: " + canvasHeight)
+
         this.grid = new QuadTreeFromCorner(
             "root",
             new Point2("root", 0, 0),
             canvasWidth,
             canvasWidth,
-            0
+            0,
+            8
         );
     }
 
