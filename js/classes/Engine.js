@@ -1,19 +1,19 @@
 import KeyHandler from "./handlers/KeyHandler.js";
 import MouseHandler from "./handlers/MouseHnadler.js";
-import Entity2 from "./entities/Entity.js";
 import Point2 from "./geometry/Point2.js";
 import QuadTreeFromCorner from "./util/QuadTreeFromCorner.js";
 import EntityBuilder2 from "./entities/EntityBuilder2.js";
 import Collision from "./util/Collision.js";
 import Terrain from "./util/Terrain.js";
 import Calculations from "./common/Calculations.js";
+import Entity from "./entities/Entity.js";
 
 export default class Engine {
 
     constructor(id) {
         this.id = id;
 
-        /**@type {Map<String, Entity2>} */
+        /**@type {Map<String, Entity>} */
         this.entityMap = new Map();
 
         /**@type {QuadTreeFromCorner} */
@@ -36,17 +36,25 @@ export default class Engine {
         this.grid = null;
 
         let terrainBluePrint = [
-            // [0, 0, 0, 0],
-            // [0, 1, 1, 0],
-            // [0, 1, 1, 0],
-            // [0, 0, 0, 0]
-            [0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 0, 0],
-            [1, 1, 1, 0, 0, 0],
-            [1, 1, 1, 0, 0, 0],
-            [1, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0]
+            // testing cube
+            [1, 0, 0, 0],
+            [0, 1, 1, 0],
+            [0, 1, 1, 0],
+            [0, 0, 0, 0]
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 0, 0, 0, 0, 0],
+            // [0, 0, 1, 1, 0, 0, 0],
+            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ];
 
         this.terrain = new Terrain(
@@ -56,15 +64,29 @@ export default class Engine {
             terrainBluePrint
         );
 
-        let distance = 50;
 
-        let terrainPoints = [8, 8, 8];
+        this.entityMap = this.terrain.setUp(canvasWidth, canvasHeight);
+        //Calculations.addMapToMap(this.entityMap, this.terrain.setUp(canvasWidth, canvasHeight));
 
-        let startTerrainX = 25;
-        let startTerrainY = canvasHeight - 25;
-
-
-        Calculations.addMapToMap(this.entityMap, this.terrain.setUp(canvasWidth, canvasHeight));
+        this.entityMap.set(
+            EntityBuilder2.kindPlayer,
+            new EntityBuilder2(
+                EntityBuilder2.kindPlayer,
+                EntityBuilder2.kindPlayer,
+                new Point2(
+                    "player_centerpoint",
+                    canvasWidth / 2,
+                    canvasHeight / 2 + 100
+                )
+            )
+                .getPointsByGenerationSquare(
+                    40,
+                    40,
+                    10,
+                    10,
+                    Entity.getHitAbleMap(true, true, true, true)
+                ).build()
+        );
 
         this.entityMap.set("mouse",
             new EntityBuilder2(
@@ -135,8 +157,8 @@ export default class Engine {
                 .setPointLifeTimeAutonomy(true)
                 .build();
             console.log("spawnedEntities: " + this.spawnedEntites);
-            exploded.explode();
-            this.entityMap.set(explodeId, exploded);
+            //exploded.explode();
+            //this.entityMap.set(explodeId, exploded);
         }
 
         // update quadtree and check collisions
@@ -149,7 +171,7 @@ export default class Engine {
             }
         }
 
-        for (const [key, value] of this.entityMap) {
+        for (let [key, value] of this.entityMap) {
             if (collisionSet.size != 0) {
                 for (const colision of collisionSet) {
                     for (const entityId of colision.entitiesId) {
@@ -171,6 +193,7 @@ export default class Engine {
                 doomedEntites.add(value.id);
             }
 
+            value = this.handleUserInput(keyHandler, value);
             value.update(canvasWidth, canvasHeight);
         }
 
@@ -187,6 +210,41 @@ export default class Engine {
         }
 
     }
+
+    /**
+     * 
+     * @param {KeyHandler} keyHandler 
+     * @param {Entity} entity 
+     * @returns 
+     */
+    handleUserInput(keyHandler, entity) {
+        let incrementX = 0;
+        let incrementY = 0;
+
+        if (keyHandler.getValue("w")) {
+            incrementY = -1;
+        }
+        if (keyHandler.getValue("a")) {
+            incrementX = -1;
+        }
+        if (keyHandler.getValue("s")) {
+            incrementY = 1;
+        }
+        if (keyHandler.getValue("d")) {
+            incrementX = 1;
+        }
+
+
+        if (incrementX != 0 || incrementY != 0) {
+            if (entity.id.includes(EntityBuilder2.kindTerrain)) {
+                entity = this.terrain.move(entity, incrementX, incrementY);
+            }
+
+        }
+
+        return entity;
+    }
+
 
     logToDom() {
         document.getElementById("entityCount").innerHTML = this.entityMap.size;

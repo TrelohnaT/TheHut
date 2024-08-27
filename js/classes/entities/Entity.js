@@ -114,7 +114,7 @@ export default class Entity {
         this.centerPoint.setVectorByStep(stepX, stepY);
         this.centerPoint.changed = true;
 
-        for (const [key, value] of this.bodyPointMap) {
+        for (let [key, value] of this.bodyPointMap) {
             value.setVectorByStep(stepX, stepY);
             value.changed = true;
         }

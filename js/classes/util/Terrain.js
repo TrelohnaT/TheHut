@@ -1,6 +1,7 @@
 import Entity from "../entities/Entity.js";
 import EntityBuilder2 from "../entities/EntityBuilder2.js";
 import Point2 from "../geometry/Point2.js";
+import KeyHandler from "../handlers/KeyHandler.js";
 
 
 
@@ -18,10 +19,12 @@ export default class Terrain {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.terrainBlueprint = terrainBlueprint;
-        this.entityMap = new Map();
 
         this.blockSize = blockSize;
         this.gridLowerLimit = gridLowerLimit;
+
+        this.startOffsetX = 0;
+        this.startOffsetY = 0;
 
     }
 
@@ -50,14 +53,14 @@ export default class Terrain {
                     }
                     let bottom = false; //= (this.terrainBlueprint[x][y + 1] == 0);
                     try {
-                        bottom = ((y + 1) <= this.terrainBlueprint[y].length && this.terrainBlueprint[y + 1][x] != 1)
+                        bottom = ((y + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y + 1][x] != 1)
                     } catch (e) {
                         console.log("bottom:")
                         console.log(e);
                     }
                     let right = false;
                     try {
-                        right = ((x + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y][x + 1] != 1);
+                        right = ((x + 1) <= this.terrainBlueprint[y].length && this.terrainBlueprint[y][x + 1] != 1);
                     } catch (e) {
                         console.log("right:")
                         console.log(e);
@@ -75,8 +78,8 @@ export default class Terrain {
                             EntityBuilder2.kindTerrain + "_entity_" + x + "_" + y,
                             EntityBuilder2.kindTerrain,
                             new Point2("terrain_centerpoint_" + x + "_" + y,
-                                (x * this.blockSize) + this.blockSize / 2 + 2.5,
-                                (y * this.blockSize) + this.blockSize / 2 + 2.5
+                                this.startOffsetX + ((x * this.blockSize) + this.blockSize / 2 + 2.5),
+                                this.startOffsetY + ((y * this.blockSize) + this.blockSize / 2 + 2.5)
                             )
                         )
                             .getPointsByGenerationSquare(
@@ -86,6 +89,7 @@ export default class Terrain {
                                 this.blockSize / this.gridLowerLimit * 2,
                                 Entity.getHitAbleMap(top, right, bottom, left)
                             )
+                            .setMoveAble(true)
                             .build()
                     );
                 }
@@ -128,6 +132,22 @@ export default class Terrain {
         // nothing doomed, nothing to update
         return new Map();
     }
+
+    /**
+     * 
+     * @param {Entity} entity 
+     * @param {Number} incrementX 
+     * @param {Number} incrementY 
+     */
+    move(entity, incrementX, incrementY) {
+
+        console.log("offset X: " + this.startOffsetX + " Y: " + this.startOffsetY);
+
+        entity.moveMeBy(incrementX, incrementY);
+        return entity;
+
+    }
+
 
 
 }

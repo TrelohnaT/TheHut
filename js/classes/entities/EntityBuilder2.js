@@ -4,7 +4,7 @@ import EntityStrategies from "./EntityStrategies.js";
 
 export default class EntityBuilder2 {
 
-    
+    static kindPlayer = "player";
     static kindMouse = "mouse";
     static kindTerrain = "terrain";
 

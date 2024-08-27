@@ -74,6 +74,13 @@ document.getElementById("canvas").onmousedown = function (evt) {
 document.getElementById("canvas").onmouseup = function (evt) {
     mouseHandler.handleEvent(evt.button, "onmouseup");
 }
+document.getElementById("body").onkeydown = function(evt) {
+    keyHandler.handleEvent(evt.key, "down");
+}
+document.getElementById("body").onkeyup = function(evt) {
+    keyHandler.handleEvent(evt.key, "up");
+}
+
 
 document.getElementById("maxDeep").onchange = function (evt) {
     document.getElementById("showMaxDeep").innerHTML = document.getElementById("maxDeep").value;
