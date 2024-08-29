@@ -14,26 +14,45 @@ export default class Terrain {
      * @param {Number} canvasHeight 
      * @param {Number[][]} terrainBlueprint 
      */
-    constructor(id, canvasWidth, canvasHeight, terrainBlueprint, blockSize = 50, gridLowerLimit = 10) {
+    constructor(id, canvasWidth, canvasHeight, terrainBlueprint, blockSize = 50) {
         this.id = id;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.terrainBlueprint = terrainBlueprint;
 
         this.blockSize = blockSize;
-        this.gridLowerLimit = gridLowerLimit;
+        this.defaultBlockSpacing = 10;
 
+        // offset for terrain generation
         this.startOffsetX = 0;
         this.startOffsetY = 0;
 
+        // increment for all terrain blocks and startOffset in one frame
+        this.incrementX = 0;
+        this.incrementY = 0;
+
+    }
+    /**
+     * Sets increment for X axis and add it to the startOffsetX
+     * @param {Number} value 
+     */
+    setIncrementX(value) {
+        this.incrementX = value;
+        this.startOffsetX = this.startOffsetX + value;
+    }
+    
+    /**
+     * Sets increment for Y axis and add it to the startOffsetY
+     * @param {Number} value 
+     */
+    setIncrementY(value) {
+        this.incrementY = value;
+        this.startOffsetY = this.startOffsetY + value;
     }
 
     setUp() {
 
         let map = new Map();
-
-        let offsetX = this.gridLowerLimit / 2;
-        let offsetY = this.gridLowerLimit / 2;
 
         // generation of terrain block
         for (let y = 0; y < this.terrainBlueprint.length; y++) {
@@ -41,17 +60,19 @@ export default class Terrain {
 
                 if (this.terrainBlueprint[y][x] == 0) {
 
-                } else if (this.terrainBlueprint[y][x] == 1) {
+                } 
+                // terrain block
+                else if (this.terrainBlueprint[y][x] == 1) {
 
                     // determinate which sides have some entity next to it and switch on/off collisions
                     let top = false;
                     try {
-                        top = ((y - 1) >= 0 && this.terrainBlueprint[y - 1][x] != 1); //false;
+                        top = ((y - 1) >= 0 && this.terrainBlueprint[y - 1][x] != 1); 
                     } catch (e) {
                         console.log("top:")
                         console.log(e);
                     }
-                    let bottom = false; //= (this.terrainBlueprint[x][y + 1] == 0);
+                    let bottom = false; 
                     try {
                         bottom = ((y + 1) <= this.terrainBlueprint.length && this.terrainBlueprint[y + 1][x] != 1)
                     } catch (e) {
@@ -65,7 +86,7 @@ export default class Terrain {
                         console.log("right:")
                         console.log(e);
                     }
-                    let left = false; //= (x == 0 || this.terrainBlueprint[x + 1][y] == 0);
+                    let left = false;
                     try {
                         left = ((x - 1) >= 0 && this.terrainBlueprint[y][x - 1] != 1);
                     } catch (e) {
@@ -85,8 +106,8 @@ export default class Terrain {
                             .getPointsByGenerationSquare(
                                 this.blockSize,
                                 this.blockSize,
-                                this.blockSize / this.gridLowerLimit * 2,
-                                this.blockSize / this.gridLowerLimit * 2,
+                                this.blockSize / this.defaultBlockSpacing * 2,
+                                this.blockSize / this.defaultBlockSpacing * 2,
                                 Entity.getHitAbleMap(top, right, bottom, left)
                             )
                             .setMoveAble(true)
@@ -136,16 +157,13 @@ export default class Terrain {
     /**
      * 
      * @param {Entity} entity 
-     * @param {Number} incrementX 
-     * @param {Number} incrementY 
      */
-    move(entity, incrementX, incrementY) {
-
-        console.log("offset X: " + this.startOffsetX + " Y: " + this.startOffsetY);
-
-        entity.moveMeBy(incrementX, incrementY);
+    move(entity) {
+        // move only if some movement occured
+        if (this.incrementX != 0 || this.incrementY != 0) {
+            entity.moveMeBy(this.incrementX, this.incrementY);
+        }
         return entity;
-
     }
 
 

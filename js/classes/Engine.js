@@ -37,31 +37,32 @@ export default class Engine {
 
         let terrainBluePrint = [
             // testing cube
-            [1, 0, 0, 0],
-            [0, 1, 1, 0],
-            [0, 1, 1, 0],
-            [0, 0, 0, 0]
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 0, 0, 0, 0, 0],
-            // [0, 0, 1, 1, 0, 0, 0],
-            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            // [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            // [1, 0, 0, 0],
+            // [0, 1, 1, 0],
+            // [0, 1, 1, 0],
+            // [0, 0, 0, 0]
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ];
 
         this.terrain = new Terrain(
             "terrain",
             canvasHeight,
             canvasHeight,
-            terrainBluePrint
+            terrainBluePrint,
+            50          // block size
         );
 
 
@@ -144,7 +145,7 @@ export default class Engine {
             let explodeId = "exploded_" + this.spawnedEntites++;
             let exploded = new EntityBuilder2(
                 explodeId,
-                EntityBuilder2.kindMouse, // TODO NOT safe
+                EntityBuilder2.kindMouse,
                 new Point2(explodeId + "_point", mouseHandler.x, mouseHandler.y)
             )
                 .getPointByRotatingVector(
@@ -171,6 +172,30 @@ export default class Engine {
             }
         }
 
+        // handle keyboard input
+        // axis Y
+        if (keyHandler.getValue("w") && keyHandler.getValue("s")) {
+            this.terrain.setIncrementY(0);
+        } else if (keyHandler.getValue("w")) {
+            this.terrain.setIncrementY(1);
+        } else if (keyHandler.getValue("s")) {
+            this.terrain.setIncrementY(-1);
+        } else {
+            this.terrain.setIncrementY(0);
+        }
+
+        // axis X
+        if (keyHandler.getValue("a") && keyHandler.getValue("d")) {
+            this.terrain.setIncrementX(0);
+        } else if (keyHandler.getValue("a")) {
+            this.terrain.setIncrementX(1);
+        } else if (keyHandler.getValue("d")) {
+            this.terrain.setIncrementX(-1);
+        } else {
+            this.terrain.setIncrementX(0);
+        }
+
+
         for (let [key, value] of this.entityMap) {
             if (collisionSet.size != 0) {
                 for (const colision of collisionSet) {
@@ -180,7 +205,7 @@ export default class Engine {
                             if (value.pointLifeTimeAutonomy) {
                                 value.handlePointColision(collisionPointId);
                             } else {
-                                if (entityId.includes("terrain")) {
+                                if (entityId.includes(EntityBuilder2.kindTerrain)) {
                                     doomedEntites.add(entityId);
                                 }
                             }
@@ -193,7 +218,13 @@ export default class Engine {
                 doomedEntites.add(value.id);
             }
 
-            value = this.handleUserInput(keyHandler, value);
+            // move terrain entities 
+            if (value.id.includes(EntityBuilder2.kindTerrain)) {
+                value = this.terrain.move(value);
+            }
+
+
+            //value = this.handleUserInput(keyHandler, value);
             value.update(canvasWidth, canvasHeight);
         }
 

@@ -77,12 +77,12 @@ export default class Entity {
             }
 
             if (this.centerPoint.changed) {
-                this.centerPoint.handleOutOfBorder(maxX, maxY);
+                //this.centerPoint.handleOutOfBorder(maxX, maxY);
                 this.centerPoint.resetChangedFlag();
             }
 
             for (const [key, value] of this.bodyPointMap) {
-                value.handleOutOfBorder(maxX, maxY);
+                //value.handleOutOfBorder(maxX, maxY);
                 value.resetChangedFlag();
             }
 
