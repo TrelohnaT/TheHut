@@ -202,7 +202,7 @@ export default class Engine {
                     for (const entityId of colision.entitiesId) {
                         for (const collisionPointId of colision.pointId) {
                             // each point has its own lifetime
-                            if (value.pointLifeTimeAutonomy) {
+                            if (value.parameters.pointLifeTimeAutonomy) {
                                 value.handlePointColision(collisionPointId);
                             } else {
                                 if (entityId.includes(EntityBuilder2.kindTerrain)) {

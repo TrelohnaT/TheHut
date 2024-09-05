@@ -1,10 +1,10 @@
-import Calculations from "../common/Calculations.js";
-import Point2 from "../geometry/Point2.js";
+import Calculations from "../../common/Calculations.js";
+import Point2 from "../../geometry/Point2.js";
 
 
 
 
-export default class EntityStrategies {
+export default class EntityShapeGenerator {
 
     static strategyPointsByRotationVector = "generatePointsByRotationVector";
     static strategySquare = "strategySquare";

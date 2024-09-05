@@ -1,6 +1,7 @@
 import Point2 from "../geometry/Point2.js";
 import Entity from "./Entity.js";
-import EntityStrategies from "./EntityStrategies.js";
+import EntityShapeGenerator from "./parts/EntityShapeGenerator.js";
+import EntityParameters from "./parts/EntityParameters.js";
 
 export default class EntityBuilder2 {
 
@@ -25,13 +26,8 @@ export default class EntityBuilder2 {
         //this.kind = "unknown";
         this.bodyPointMap = new Map;
 
-        this.moveAble = false;
         this.fillInColor = "#00ff00";
-
-        this.seeCenterPoint = true;
-        this.seeBodyPoints = true;
-
-        this.pointLifeTimeAutonomy = false;
+        this.parameters = new EntityParameters();
 
     }
 
@@ -41,7 +37,7 @@ export default class EntityBuilder2 {
      * @returns {EntityBuilder2}
      */
     setPointLifeTimeAutonomy(value) {
-        this.pointLifeTimeAutonomy = value;
+        this.parameters.setPointLifeTimeAutonomy(value);
         return this;
     }
     /**
@@ -50,7 +46,7 @@ export default class EntityBuilder2 {
      * @returns {EntityBuilder2}
      */
     setSeeBodyPoints(value) {
-        this.seeCenterPoint = value;
+        this.parameters.setSeeBodyPoints(value);
         return this;
     }
 
@@ -60,7 +56,7 @@ export default class EntityBuilder2 {
      * @returns {EntityBuilder2}
      */
     setSeeCenterPoint(value) {
-        this.seeBodyPoints = value;
+        this.parameters.setSeeCenterPoints(value);
         return this;
     }
 
@@ -70,7 +66,7 @@ export default class EntityBuilder2 {
      * @returns {EntityBuilder2}
      */
     setMoveAble(value) {
-        this.moveAble = value;
+        this.parameters.setMoveAble(value);
         return this;
     }
 
@@ -101,7 +97,7 @@ export default class EntityBuilder2 {
         hitAbleSides
     ) {
         //this.kind = EntityStrategies.kindRectangle;
-        this.bodyPointMap = EntityStrategies.generatePointsForSquare(
+        this.bodyPointMap = EntityShapeGenerator.generatePointsForSquare(
             this.id,
             this.centerPoint,
             width,
@@ -130,7 +126,7 @@ export default class EntityBuilder2 {
         collision = true
     ) {
         //this.kind = EntityStrategies.kindSymetric;
-        this.bodyPointMap = EntityStrategies.generatePointsByRotationVector(
+        this.bodyPointMap = EntityShapeGenerator.generatePointsByRotationVector(
             this.id,
             distanceFromCenter,
             this.centerPoint,
@@ -153,11 +149,7 @@ export default class EntityBuilder2 {
             this.kind,
             this.centerPoint,
             this.bodyPointMap,
-            this.moveAble,
-            this.fillInColor,
-            this.seeCenterPoint,
-            this.seeCenterPoint,
-            this.pointLifeTimeAutonomy
+            this.parameters
         );
 
     }

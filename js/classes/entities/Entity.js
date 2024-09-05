@@ -1,6 +1,7 @@
 import Calculations from "../common/Calculations.js";
 import Point2 from "../geometry/Point2.js";
-import EntityStrategies from "./EntityStrategies.js";
+import EntityShapeGenerator from "./parts/EntityShapeGenerator.js";
+import EntityParameters from "./parts/EntityParameters.js";
 
 export default class Entity {
 
@@ -10,32 +11,21 @@ export default class Entity {
      * @param {String} kind 
      * @param {Point2} centerPoint 
      * @param {Map<String, Point2>} bodyPointMap 
-     * @param {boolean} moveAble 
-     * @param {String} fillInCollor
-     * @param {boolean} seeCenterPoint 
-     * @param {boolean} seeBodyPoints 
-     * @param {boolean} pointLifeTimeAutonomy 
+     * @param {EntityParameters} parameters
      */
     constructor(
         id,
         kind,
         centerPoint,
         bodyPointMap,
-        moveAble,
-        fillInCollor,
-        seeCenterPoint,
-        seeBodyPoints,
-        pointLifeTimeAutonomy
+        parameters
     ) {
         this.id = id;
         this.kind = kind;
         this.centerPoint = centerPoint;
-        this.moveAble = moveAble;
-        this.fillInCollor = fillInCollor;
 
-        this.seeCenterPoint = seeCenterPoint;
-        this.seeBodyPoints = seeBodyPoints;
-        this.pointLifeTimeAutonomy = pointLifeTimeAutonomy;
+        /**@type {EntityParameters} */
+        this.parameters = parameters;
 
         // generated
         this.bodyPointMap = bodyPointMap;
@@ -67,7 +57,7 @@ export default class Entity {
 
     update(maxX, maxY) {
 
-        if (this.moveAble) {
+        if (this.parameters.moveAble) {
             this.centerPoint.moveMeX();
             this.centerPoint.moveMeY();
 
@@ -148,37 +138,17 @@ export default class Entity {
             value.drawMe(ctx);
         }
 
-        if (this.kind == EntityStrategies.kindRectangle) {
+        if (this.kind == EntityShapeGenerator.kindRectangle) {
 
-            ctx.fillStyle = this.fillInCollor;
+            ctx.fillStyle = this.parameters.fillInCollor;
             let tmp = [...this.bodyPointMap.values()];
 
 
-            ctx.fillStyle = this.fillInCollor;
+            ctx.fillStyle = this.parameters.fillInCollor;
             //ctx.fillRect(tmp[0].x, tmp[0].y, tmp[tmp.length - 1].x - tmp[0].x, tmp[tmp.length - 1].y - tmp[0].y);
             ctx.restore();
         }
 
-    }
-
-    /**
-     * 
-     * @param {Boolean} value 
-     * @returns {Entity}
-     */
-    setMoveAble(value) {
-        this.moveAble = value;
-        return this;
-    }
-
-    /**
-     * 
-     * @param {Map<String, Point2>} value 
-     * @returns {Entity}
-     */
-    setBodyPointMap(value) {
-        this.bodyPointMap = value;
-        return this;
     }
 
     /**
